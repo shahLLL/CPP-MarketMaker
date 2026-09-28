@@ -6,8 +6,9 @@ inline constexpr Int8 NULL_MESSAGE_SIGNAL = -1;
 // Return size of message given messageType
 [[nodiscard]] const Int8 getMessageType(Alpha messageType);
 
-/* Parser Helper Functions */
 
+/* Parser Helper Functions */
+void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept;
 void parseSystemEventMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 void parseStockDirectory(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 void parseStockTradingAction(ByteContainer& byteContainer, Byte* bytePtr) noexcept;

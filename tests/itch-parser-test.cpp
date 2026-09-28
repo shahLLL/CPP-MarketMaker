@@ -30,3 +30,47 @@ TEST_CASE("PARSER TESTCASE #1", "[getMessageType]") {
     REQUIRE(getMessageType('3') == NULL_MESSAGE_SIGNAL);
     REQUIRE(getMessageType('?') == NULL_MESSAGE_SIGNAL);
 }
+
+TEST_CASE("PARSER TESTCASE #2", "[endianSwap]") {
+    ByteContainer byteContainer1 = ByteContainer{};
+    ByteContainer byteContainer2 = ByteContainer{};
+    ByteContainer byteContainer3 = ByteContainer{};
+    ByteContainer byteContainer4 = ByteContainer{};
+
+    Byte test1[] = {Byte{0x00}, Byte{0x64}};
+    Byte test2[] = {Byte{0x00}, Byte{0x2A}, Byte{0x03}, Byte{0xE9}};
+    Byte test3[] = {Byte{0x52}, Byte{0x00}, Byte{0x64}, 
+        Byte{0x01}, Byte{0xF4}, Byte{0x64}};
+    Byte test4[] = {Byte{0x59}, Byte{0x43}, Byte{0x4E}, Byte{0x41},
+        Byte{0x50}, Byte{0x4E}, Byte{0x4E}, Byte{0x31}};
+    
+    endianSwap(byteContainer1, test1, 0, 1);
+    endianSwap(byteContainer2, test2, 0, 3);
+    endianSwap(byteContainer3, test3, 0, 5);
+    endianSwap(byteContainer4, test4, 0, 7);
+
+    REQUIRE(byteContainer1[0] == Byte{0x64});
+    REQUIRE(byteContainer1[1] == Byte{0x00});
+
+    REQUIRE(byteContainer2[0] == Byte{0xE9});
+    REQUIRE(byteContainer2[1] == Byte{0x03});
+    REQUIRE(byteContainer2[2] == Byte{0x2A});
+    REQUIRE(byteContainer2[3] == Byte{0x00});
+
+    REQUIRE(byteContainer3[0] == Byte{0x64});
+    REQUIRE(byteContainer3[1] == Byte{0xF4});
+    REQUIRE(byteContainer3[2] == Byte{0x01});
+    REQUIRE(byteContainer3[3] == Byte{0x64});
+    REQUIRE(byteContainer3[4] == Byte{0x00});
+    REQUIRE(byteContainer3[5] == Byte{0x52});
+
+    REQUIRE(byteContainer4[0] == Byte{0x31});
+    REQUIRE(byteContainer4[1] == Byte{0x4E});
+    REQUIRE(byteContainer4[2] == Byte{0x4E});
+    REQUIRE(byteContainer4[3] == Byte{0x50});
+    REQUIRE(byteContainer4[4] == Byte{0x41});
+    REQUIRE(byteContainer4[5] == Byte{0x4E});
+    REQUIRE(byteContainer4[6] == Byte{0x43});
+    REQUIRE(byteContainer4[7] == Byte{0x59});
+
+}

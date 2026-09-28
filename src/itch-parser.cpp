@@ -1,5 +1,22 @@
 #include "../headers/itch-parser.hpp"
 
+void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept {
+    SizeT end = tail;
+    while(head <= end) {
+        byteContainer[head] = *(bytePtr + tail);
+        head = head + 1;
+        tail = tail - 1;
+    }
+}
+
+void parseSystemEventMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    byteContainer[11] = *(bytePtr + 11);
+}
+
 [[nodiscard]] const Int8 getMessageType(Alpha messageType) {
     switch(messageType) {
         case 'S': return 12;
