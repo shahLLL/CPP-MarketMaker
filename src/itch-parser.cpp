@@ -1,6 +1,6 @@
 #include "../headers/itch-parser.hpp"
 
-const Int8 getMessageType(Alpha messageType) {
+[[nodiscard]] const Int8 getMessageType(Alpha messageType) {
     switch(messageType) {
         case 'S': return 12;
         case 'R': return 39;
