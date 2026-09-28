@@ -74,3 +74,28 @@ TEST_CASE("PARSER TESTCASE #2", "[endianSwap]") {
     REQUIRE(byteContainer4[7] == Byte{0x59});
 
 }
+
+TEST_CASE("PARSER TESTCASE #3", "[parseSystemEventMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x53},
+        Byte{0x00}, Byte{0x2A},
+        Byte{0x03}, Byte{0xE9},
+        Byte{0x00}, Byte{0x00}, Byte{0x00},
+        Byte{0x00}, Byte{0x01}, Byte{0xF4},
+        Byte{0x4F}
+    };
+    parseSystemEventMessage(byteContainer, test);
+    REQUIRE(byteContainer[0] == std::byte{0x53});
+    REQUIRE(byteContainer[1] == Byte{0x2A});
+    REQUIRE(byteContainer[2] == Byte{0x00});
+    REQUIRE(byteContainer[3] == Byte{0xE9});
+    REQUIRE(byteContainer[4] == Byte{0x03});
+    REQUIRE(byteContainer[5] == Byte{0xF4});
+    REQUIRE(byteContainer[6] == Byte{0x01});
+    REQUIRE(byteContainer[7] == Byte{0x00});
+    REQUIRE(byteContainer[8] == Byte{0x00});
+    REQUIRE(byteContainer[9] == Byte{0x00});
+    REQUIRE(byteContainer[10] == Byte{0x00});
+    REQUIRE(byteContainer[11] == Byte{0x4F});
+}
