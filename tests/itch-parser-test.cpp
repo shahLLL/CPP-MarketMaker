@@ -506,13 +506,13 @@ TEST_CASE("PARSER TESTCASE #20", "[parseOrderReplaceMessage]") {
     };
     parseOrderReplaceMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
-    endianSwap(byteContainer, test, 1, 2);
-    endianSwap(byteContainer, test, 3, 4);
-    endianSwap(byteContainer, test, 5, 10);
-    endianSwap(byteContainer, test, 11, 18);
-    endianSwap(byteContainer, test, 19, 26);
-    endianSwap(byteContainer, test, 27, 30);
-    endianSwap(byteContainer, test, 31, 34);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 26);
+    endianCompare(byteContainer, test, 27, 30);
+    endianCompare(byteContainer, test, 31, 34);
 }
 
 TEST_CASE("PARSER TESTCASE #21", "[parseTradeMessage]") {
@@ -629,4 +629,37 @@ TEST_CASE("PARSER TESTCASE #24", "[parseNOIIMessage]") {
     endianCompare(byteContainer, test, 40, 43);
     endianCompare(byteContainer, test, 44, 47);
     directCompare(byteContainer, test, 48, 49);
+}
+
+TEST_CASE("PARSER TESTCASE #25", "[parseDLWCRPD]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+      Byte{0x4F}, Byte{0x05}, Byte{0x2C},
+      Byte{0x01}, Byte{0xC8}, Byte{0x00},
+      Byte{0x00}, Byte{0x01}, Byte{0x54},
+      Byte{0x02}, Byte{0x34}, Byte{0x41},
+      Byte{0x41}, Byte{0x50}, Byte{0x4C},
+      Byte{0x20}, Byte{0x20}, Byte{0x20},
+      Byte{0x20}, Byte{0x4E}, Byte{0x00},
+      Byte{0x00}, Byte{0x01}, Byte{0xF4},
+      Byte{0x00}, Byte{0x00}, Byte{0x01},
+      Byte{0xF4}, Byte{0x00}, Byte{0x00},
+      Byte{0x01}, Byte{0xF4}, Byte{0x00},
+      Byte{0x00}, Byte{0x00}, Byte{0x00},
+      Byte{0x07}, Byte{0x5B}, Byte{0xCD},
+      Byte{0x15}, Byte{0x00}, Byte{0x00},
+      Byte{0x01}, Byte{0xF4}, Byte{0x00},
+      Byte{0x00}, Byte{0x01}, Byte{0xF4}
+    };
+    parseDLWCRPD(byteContainer, test);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 19);
+    endianCompare(byteContainer, test, 20, 23);
+    endianCompare(byteContainer, test, 24, 27);
+    endianCompare(byteContainer, test, 28, 31);
+    endianCompare(byteContainer, test, 32, 39);
+    endianCompare(byteContainer, test, 40, 43);
+    endianCompare(byteContainer, test, 44, 47);
 }

@@ -258,3 +258,17 @@ void parseNOIIMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
     byteContainer[48] = *(bytePtr + 48);
     byteContainer[49] = *(bytePtr + 49);
 }
+
+void parseDLWCRPD(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    directCopy(byteContainer, bytePtr, 11, 19);
+    endianSwap(byteContainer, bytePtr, 20, 23);
+    endianSwap(byteContainer, bytePtr, 24, 27);
+    endianSwap(byteContainer, bytePtr, 28, 31);
+    endianSwap(byteContainer, bytePtr, 32, 39);
+    endianSwap(byteContainer, bytePtr, 40, 43);
+    endianSwap(byteContainer, bytePtr, 44, 47);
+}
