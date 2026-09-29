@@ -577,4 +577,21 @@ TEST_CASE("PARSER TESTCASE #22", "[parseCrossTradeMessage]") {
     directCompare(byteContainer, test, 39, 39);
 }
 
-
+TEST_CASE("PARSER TESTCASE #23", "[parseBrokenTradeMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+      std::byte{0x42}, std::byte{0x05}, std::byte{0x2C},
+      std::byte{0x01}, std::byte{0xC8}, std::byte{0x00},
+      std::byte{0x00}, std::byte{0x01}, std::byte{0x54},
+      std::byte{0x02}, std::byte{0x34}, std::byte{0x00},
+      std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
+      std::byte{0x07}, std::byte{0x5B}, std::byte{0xCD},
+      std::byte{0x15}
+    };
+    parseBrokenTradeMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+}
