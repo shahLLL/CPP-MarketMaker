@@ -547,4 +547,34 @@ TEST_CASE("PARSER TESTCASE #21", "[parseTradeMessage]") {
     endianCompare(byteContainer, test, 36, 43);
 }
 
+TEST_CASE("PARSER TESTCASE #22", "[parseCrossTradeMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+      Byte{0x51}, Byte{0x05}, Byte{0x2C},
+      Byte{0x01}, Byte{0xC8}, Byte{0x00}, 
+      Byte{0x00}, Byte{0x01}, Byte{0x54}, 
+      Byte{0x02}, Byte{0x34}, Byte{0x00}, 
+      Byte{0x00}, Byte{0x00}, Byte{0x00},
+      Byte{0x07}, Byte{0x5B}, Byte{0xCD},
+      Byte{0x15}, Byte{0x41}, Byte{0x41},
+      Byte{0x50}, Byte{0x4C}, Byte{0x20},
+      Byte{0x20}, Byte{0x20}, Byte{0x20},
+      Byte{0x00}, Byte{0x00}, Byte{0x01},
+      Byte{0xF4}, Byte{0x00}, Byte{0x00},
+      Byte{0x00}, Byte{0x00}, Byte{0x07},
+      Byte{0x5B}, Byte{0xCD}, Byte{0x15},
+      Byte{0x4F},
+    };
+    parseCrossTradeMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+    directCompare(byteContainer, test, 19, 26);
+    endianCompare(byteContainer, test, 27, 30);
+    endianCompare(byteContainer, test, 31, 38);
+    directCompare(byteContainer, test, 39, 39);
+}
+
 

@@ -222,3 +222,15 @@ void parseTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
     endianSwap(byteContainer, bytePtr, 32, 35);
     endianSwap(byteContainer, bytePtr, 36, 43);
 }
+
+void parseCrossTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    endianSwap(byteContainer, bytePtr, 11, 18);
+    directCopy(byteContainer, bytePtr, 19, 26);
+    endianSwap(byteContainer, bytePtr, 27, 30);
+    endianSwap(byteContainer, bytePtr, 31, 38);
+    byteContainer[39] = *(bytePtr + 39);
+}
