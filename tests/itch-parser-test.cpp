@@ -246,3 +246,19 @@ TEST_CASE("PARSER TESTCASE #9", "[parseMWCBDeclineLevelMessage]") {
     endianCompare(byteContainer, test, 19, 26);
     endianCompare(byteContainer, test, 27, 34);
 }
+
+TEST_CASE("PARSER TESTCASE #10", "[parseMWCBStatusMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        std::byte{0x57}, std::byte{0x05}, std::byte{0x2C},
+        std::byte{0x01}, std::byte{0xC8}, std::byte{0x00},
+        std::byte{0x00}, std::byte{0xCE}, std::byte{0x07},
+        std::byte{0xF2}, std::byte{0x34}, std::byte{0x31}
+    };
+    parseMWCBStatusMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 11);
+}

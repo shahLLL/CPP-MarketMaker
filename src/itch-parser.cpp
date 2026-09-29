@@ -95,3 +95,11 @@ void parseMWCBDeclineLevelMessage(ByteContainer& byteContainer, Byte* bytePtr) n
     endianSwap(byteContainer, bytePtr, 19, 26);
     endianSwap(byteContainer, bytePtr, 27, 34);
 }
+
+void parseMWCBStatusMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    byteContainer[11] = *(bytePtr + 11);
+}
