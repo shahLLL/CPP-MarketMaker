@@ -335,3 +335,31 @@ TEST_CASE("PARSER TESTCASE #13", "[parseOperationalHalt]") {
     endianCompare(byteContainer, test, 5, 10);
     directCompare(byteContainer, test, 11, 20);
 }
+
+TEST_CASE("PARSER TESTCASE #14", "[parseAddOrderMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x41}, Byte{0x05}, Byte{0x2C},
+        Byte{0x01}, Byte{0xC8}, Byte{0x00},
+        Byte{0x00}, Byte{0xCE}, Byte{0x07},
+        Byte{0xF2}, Byte{0x34}, Byte{0x00},
+        Byte{0x00}, Byte{0x00}, Byte{0x02},
+        Byte{0x4C}, Byte{0xBC}, Byte{0x6B},
+        Byte{0x4A}, Byte{0x42}, Byte{0x00},
+        Byte{0x00}, Byte{0x01}, Byte{0xF4},
+        Byte{0x4D}, Byte{0x53}, Byte{0x46},
+        Byte{0x54}, Byte{0x20}, Byte{0x20},
+        Byte{0x20}, Byte{0x20}, Byte{0x00},
+        Byte{0x40}, Byte{0x2A}, Byte{0x88}
+    };
+    parseAddOrderMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 19);
+    endianCompare(byteContainer, test, 20, 23);
+    directCompare(byteContainer, test, 24, 31);
+    endianCompare(byteContainer, test, 32, 35);
+}
+
