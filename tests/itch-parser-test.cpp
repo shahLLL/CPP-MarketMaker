@@ -287,3 +287,32 @@ TEST_CASE("PARSER TESTCASE #11", "[parseQuotingPeriodUpdate]") {
     directCompare(byteContainer, test, 23, 23);
     endianCompare(byteContainer, test, 24, 27);
 }
+
+TEST_CASE("PARSER TESTCASE #12", "[parseLULDAuctionCollar]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x4A}, Byte{0x05}, Byte{0x2C},
+        Byte{0x01}, Byte{0xC8}, Byte{0x00},
+        Byte{0x00}, Byte{0xCE}, Byte{0x07},
+        Byte{0xF2}, Byte{0x34}, Byte{0x41},
+        Byte{0x41}, Byte{0x50}, Byte{0x4C},
+        Byte{0x20}, Byte{0x20}, Byte{0x20},
+        Byte{0x20}, Byte{0x00}, Byte{0x1A},
+        Byte{0xB3}, Byte{0xF0}, Byte{0x00},
+        Byte{0x1D}, Byte{0x5F}, Byte{0x88},
+        Byte{0x00}, Byte{0x18}, Byte{0x08}, 
+        Byte{0x58}, Byte{0x00}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x02}
+    };
+
+    parseLULDAuctionCollar(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 22);
+    endianCompare(byteContainer, test, 23, 26);
+    endianCompare(byteContainer, test, 27, 30);
+    endianCompare(byteContainer, test, 31, 34);
+}

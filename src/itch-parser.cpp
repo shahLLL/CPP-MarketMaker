@@ -114,3 +114,15 @@ void parseQuotingPeriodUpdate(ByteContainer& byteContainer, Byte* bytePtr) noexc
     byteContainer[23] = *(bytePtr + 23);
     endianSwap(byteContainer, bytePtr, 24, 27);   
 }
+
+void parseLULDAuctionCollar(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    directCopy(byteContainer, bytePtr, 11, 18);
+    endianSwap(byteContainer, bytePtr, 19, 22);
+    endianSwap(byteContainer, bytePtr, 23, 26);
+    endianSwap(byteContainer, bytePtr, 27, 30);
+    endianSwap(byteContainer, bytePtr, 31, 34);
+}
