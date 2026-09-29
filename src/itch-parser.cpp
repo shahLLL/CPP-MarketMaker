@@ -145,3 +145,15 @@ void parseAddOrderMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept 
     directCopy(byteContainer, bytePtr, 24, 31);
     endianSwap(byteContainer, bytePtr, 32, 35);
 }
+
+void parseAddOrderMPIDAttributionMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    directCopy(byteContainer, bytePtr, 11, 19);
+    endianSwap(byteContainer, bytePtr, 20, 23);
+    directCopy(byteContainer, bytePtr, 24, 31);
+    endianSwap(byteContainer, bytePtr, 32, 35);
+    directCopy(byteContainer, bytePtr, 36, 39);    
+}
