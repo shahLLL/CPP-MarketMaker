@@ -357,7 +357,8 @@ TEST_CASE("PARSER TESTCASE #14", "[parseAddOrderMessage]") {
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
-    directCompare(byteContainer, test, 11, 19);
+    endianCompare(byteContainer, test, 11, 18);
+    directCompare(byteContainer, test, 19, 19);
     endianCompare(byteContainer, test, 20, 23);
     directCompare(byteContainer, test, 24, 31);
     endianCompare(byteContainer, test, 32, 35);
@@ -386,9 +387,31 @@ TEST_CASE("PARSER TESTCASE #15", "[parseAddOrderMPIDAttributionMessage]") {
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
-    directCompare(byteContainer, test, 11, 19);
+    endianCompare(byteContainer, test, 11, 18);
+    directCompare(byteContainer, test, 19, 19);
     endianCompare(byteContainer, test, 20, 23);
     directCompare(byteContainer, test, 24, 31);
     endianCompare(byteContainer, test, 32, 35);
     directCompare(byteContainer, test, 36, 39);
+}
+
+TEST_CASE("PARSER TESTCASE #16", "[parseOrderExecutedMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        std::byte{0x45},
+        std::byte{0x05}, std::byte{0x2C},
+        std::byte{0x01}, std::byte{0xC8},
+        std::byte{0x00}, std::byte{0x00}, std::byte{0x01}, std::byte{0x54}, std::byte{0x02}, std::byte{0x34},
+        std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x02}, std::byte{0x72}, std::byte{0x03}, std::byte{0xDB}, std::byte{0x4A},
+        std::byte{0x00}, std::byte{0x00}, std::byte{0x01}, std::byte{0xF4},
+        std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x00}, std::byte{0x07}, std::byte{0x5B}, std::byte{0xCD}, std::byte{0x15}
+    };
+    parseOrderExecutedMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 22);
+    endianCompare(byteContainer, test, 23, 30);
 }
