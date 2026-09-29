@@ -198,3 +198,14 @@ void parseOrderDeleteMessage(ByteContainer& byteContainer, Byte* bytePtr) noexce
     endianSwap(byteContainer, bytePtr, 5, 10);
     endianSwap(byteContainer, bytePtr, 11, 18);
 }
+
+void parseOrderReplaceMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    endianSwap(byteContainer, bytePtr, 11, 18);
+    endianSwap(byteContainer, bytePtr, 19, 26);
+    endianSwap(byteContainer, bytePtr, 27, 30);
+    endianSwap(byteContainer, bytePtr, 31, 34);
+}

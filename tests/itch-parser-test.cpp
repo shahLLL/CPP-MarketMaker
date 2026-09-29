@@ -488,4 +488,31 @@ TEST_CASE("PARSER TESTCASE #19", "[parseOrderDeleteMessage]") {
     endianCompare(byteContainer, test, 11, 18);
 }
 
+TEST_CASE("PARSER TESTCASE #20", "[parseOrderReplaceMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+      Byte{0x55}, Byte{0x05}, Byte{0x2C},
+      Byte{0x01}, Byte{0xC8}, Byte{0x00},
+      Byte{0x00}, Byte{0x01}, Byte{0x54},
+      Byte{0x02}, Byte{0x34}, Byte{0x00},
+      Byte{0x00}, Byte{0x00}, Byte{0x02},
+      Byte{0x72}, Byte{0x03}, Byte{0xDB},
+      Byte{0x4A}, Byte{0x00}, Byte{0x00},
+      Byte{0x00}, Byte{0x08}, Byte{0x41},
+      Byte{0x12}, Byte{0xA2}, Byte{0xB2},
+      Byte{0x00}, Byte{0x00}, Byte{0x01},
+      Byte{0xF4}, Byte{0x00}, Byte{0x40},
+      Byte{0x2A}, Byte{0x88}
+    };
+    parseOrderReplaceMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianSwap(byteContainer, test, 1, 2);
+    endianSwap(byteContainer, test, 3, 4);
+    endianSwap(byteContainer, test, 5, 10);
+    endianSwap(byteContainer, test, 11, 18);
+    endianSwap(byteContainer, test, 19, 26);
+    endianSwap(byteContainer, test, 27, 30);
+    endianSwap(byteContainer, test, 31, 34);
+}
+
 
