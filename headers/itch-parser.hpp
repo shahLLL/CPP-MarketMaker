@@ -9,6 +9,7 @@ inline constexpr Int8 NULL_MESSAGE_SIGNAL = -1;
 
 /* Parser Helper Functions */
 void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept;
+void directCopy(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept;
 void parseSystemEventMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 void parseStockDirectory(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 void parseStockTradingAction(ByteContainer& byteContainer, Byte* bytePtr) noexcept;

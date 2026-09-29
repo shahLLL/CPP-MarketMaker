@@ -1,6 +1,21 @@
 #include <catch2/catch_test_macros.hpp>
 #include "../headers/itch-parser.hpp"
 
+// Helper Functions
+void directCompare(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) {
+    for(int i = head; i <= tail; i++) { REQUIRE(byteContainer[i] == *(bytePtr + i)); }
+}
+
+void endianCompare(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) {
+    SizeT end = tail;
+    while(head <= end) {
+        REQUIRE(byteContainer[head] == *(bytePtr + tail));
+        head = head + 1;
+        tail = tail - 1;
+    }
+}
+
+// Test Cases
 TEST_CASE("PARSER TESTCASE #1", "[getMessageType]") {
     REQUIRE(getMessageType('S') == 12);
     REQUIRE(getMessageType('R') == 39);
@@ -75,7 +90,27 @@ TEST_CASE("PARSER TESTCASE #2", "[endianSwap]") {
 
 }
 
-TEST_CASE("PARSER TESTCASE #3", "[parseSystemEventMessage]") {
+TEST_CASE("PARSER TESTCASE #3", "[directCopy]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x53}, Byte{0x00}, 
+        Byte{0x2A}, Byte{0x03}, 
+        Byte{0xE9}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x00}
+    };
+
+    directCopy(byteContainer, test, 0, 7);
+    REQUIRE(byteContainer[0] == Byte{0x53});
+    REQUIRE(byteContainer[1] == Byte{0x00});
+    REQUIRE(byteContainer[2] == Byte{0x2A});
+    REQUIRE(byteContainer[3] == Byte{0x03});
+    REQUIRE(byteContainer[4] == Byte{0xE9});
+    REQUIRE(byteContainer[5] == Byte{0x00});
+    REQUIRE(byteContainer[6] == Byte{0x00});
+    REQUIRE(byteContainer[7] == Byte{0x00});
+}
+
+TEST_CASE("PARSER TESTCASE #4", "[parseSystemEventMessage]") {
     ByteContainer byteContainer = ByteContainer{};
     Byte test[] = {
         Byte{0x53},
@@ -86,16 +121,35 @@ TEST_CASE("PARSER TESTCASE #3", "[parseSystemEventMessage]") {
         Byte{0x4F}
     };
     parseSystemEventMessage(byteContainer, test);
-    REQUIRE(byteContainer[0] == std::byte{0x53});
-    REQUIRE(byteContainer[1] == Byte{0x2A});
-    REQUIRE(byteContainer[2] == Byte{0x00});
-    REQUIRE(byteContainer[3] == Byte{0xE9});
-    REQUIRE(byteContainer[4] == Byte{0x03});
-    REQUIRE(byteContainer[5] == Byte{0xF4});
-    REQUIRE(byteContainer[6] == Byte{0x01});
-    REQUIRE(byteContainer[7] == Byte{0x00});
-    REQUIRE(byteContainer[8] == Byte{0x00});
-    REQUIRE(byteContainer[9] == Byte{0x00});
-    REQUIRE(byteContainer[10] == Byte{0x00});
-    REQUIRE(byteContainer[11] == Byte{0x4F});
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 11);
+}
+
+TEST_CASE("PARSER TESTCASE #5", "[parseStockDirectory]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x52}, Byte{0x00}, Byte{0x64},
+        Byte{0x01}, Byte{0xF4}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x00}, Byte{0x00}, 
+        Byte{0x03}, Byte{0xE8}, Byte{0x41}, 
+        Byte{0x41}, Byte{0x50}, Byte{0x4C}, 
+        Byte{0x20}, Byte{0x20}, Byte{0x20}, 
+        Byte{0x20}, Byte{0x51}, Byte{0x4E},
+        Byte{0x00}, Byte{0x00}, Byte{0x00},
+        Byte{0x64}, Byte{0x59}, Byte{0x43},
+        Byte{0x4E}, Byte{0x41}, Byte{0x50},
+        Byte{0x4E}, Byte{0x4E}, Byte{0x31},
+        Byte{0x4E}, Byte{0x00}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x00}, Byte{0x4E}
+    };
+
+    parseStockDirectory(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 19);
 }
