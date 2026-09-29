@@ -158,18 +158,18 @@ TEST_CASE("PARSER TESTCASE #5", "[parseStockDirectory]") {
     directCompare(byteContainer, test, 38, 38);
 }
 
-TEST_CASE("PARSER TESTCASE #5", "[parseStockTradingAction]") {
+TEST_CASE("PARSER TESTCASE #6", "[parseStockTradingAction]") {
     ByteContainer byteContainer = ByteContainer{};
     Byte test[] = {
-        std::byte{0x48}, std::byte{0x05}, std::byte{0x2C},
-        std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, 
-        std::byte{0x00}, std::byte{0x3A}, std::byte{0xDE}, 
-        std::byte{0x68}, std::byte{0xB1}, std::byte{0x41}, 
-        std::byte{0x41}, std::byte{0x50}, std::byte{0x4C}, 
-        std::byte{0x20}, std::byte{0x20}, std::byte{0x20},
-        std::byte{0x20}, std::byte{0x54}, std::byte{0x00},
-        std::byte{0x4D}, std::byte{0x56}, std::byte{0x49},
-        std::byte{0x20}
+        Byte{0x48}, Byte{0x05}, Byte{0x2C},
+        Byte{0x00}, Byte{0x07}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x3A}, Byte{0xDE}, 
+        Byte{0x68}, Byte{0xB1}, Byte{0x41}, 
+        Byte{0x41}, Byte{0x50}, Byte{0x4C}, 
+        Byte{0x20}, Byte{0x20}, Byte{0x20},
+        Byte{0x20}, Byte{0x54}, Byte{0x00},
+        Byte{0x4D}, Byte{0x56}, Byte{0x49},
+        Byte{0x20}
     };
 
     parseStockTradingAction(byteContainer, test);
@@ -178,4 +178,23 @@ TEST_CASE("PARSER TESTCASE #5", "[parseStockTradingAction]") {
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
     directCompare(byteContainer, test, 11, 24);
+}
+
+TEST_CASE("PARSER TESTCASE #7", "[parseRegSHORestriction]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x59}, Byte{0x02}, Byte{0x00},
+        Byte{0x00}, Byte{0x0C}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x00}, Byte{0x08}, 
+        Byte{0x4A}, Byte{0xEA}, Byte{0x4D}, 
+        Byte{0x53}, Byte{0x46}, Byte{0x54}, 
+        Byte{0x20}, Byte{0x20}, Byte{0x20}, 
+        Byte{0x20}, Byte{0x31}
+    };
+    parseRegSHORestriction(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 19);
 }
