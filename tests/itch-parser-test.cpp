@@ -448,3 +448,25 @@ TEST_CASE("PARSER TESTCASE #17", "[parseOrderExecutedWithPriceMessage]") {
     endianCompare(byteContainer, test, 32, 35);
 }
 
+TEST_CASE("PARSER TESTCASE #18", "[parseOrderCancelMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+       std::byte{0x58}, std::byte{0x05}, std::byte{0x2C},
+       std::byte{0x01}, std::byte{0xC8}, std::byte{0x00},
+       std::byte{0x00}, std::byte{0x01}, std::byte{0x54},
+       std::byte{0x02}, std::byte{0x34}, std::byte{0x00},
+       std::byte{0x00}, std::byte{0x00}, std::byte{0x02},
+       std::byte{0x72}, std::byte{0x03}, std::byte{0xDB},
+       std::byte{0x4A}, std::byte{0x00}, std::byte{0x00}, 
+       std::byte{0x01}, std::byte{0xF4}
+    };
+    parseOrderCancelMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 22);
+}
+
+
