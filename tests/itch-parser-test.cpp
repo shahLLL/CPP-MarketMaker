@@ -198,3 +198,26 @@ TEST_CASE("PARSER TESTCASE #7", "[parseRegSHORestriction]") {
     endianCompare(byteContainer, test, 5, 10);
     directCompare(byteContainer, test, 11, 19);
 }
+
+TEST_CASE("PARSER TESTCASE #8", "[parseMarketParticipantPosition]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x4C}, Byte{0x20}, Byte{0x00},
+        Byte{0x00}, Byte{0x03}, Byte{0x00}, 
+        Byte{0x00}, Byte{0xCE}, Byte{0x07}, 
+        Byte{0xF2}, Byte{0x34}, Byte{0x42}, 
+        Byte{0x41}, Byte{0x52}, Byte{0x43},
+        Byte{0x54}, Byte{0x53}, Byte{0x4C}, 
+        Byte{0x41}, Byte{0x20}, Byte{0x20}, 
+        Byte{0x20}, Byte{0x20}, Byte{0x59},
+        Byte{0x4E}, Byte{0x41}
+    };
+
+    parseMarketParticipantPosition(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 25);
+}
+

@@ -76,3 +76,12 @@ void parseRegSHORestriction(ByteContainer& byteContainer, Byte* bytePtr) noexcep
     endianSwap(byteContainer, bytePtr, 5, 10);
     directCopy(byteContainer, bytePtr, 11, 19);
 }
+
+void parseMarketParticipantPosition(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    directCopy(byteContainer, bytePtr, 11, 25);
+
+}
