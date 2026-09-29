@@ -54,18 +54,9 @@ void parseStockDirectory(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
     endianSwap(byteContainer, bytePtr, 1, 2);
     endianSwap(byteContainer, bytePtr, 3, 4);
     endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 18);
-    byteContainer[19] = *(bytePtr + 19);
-    byteContainer[20] = *(bytePtr + 20);
+    directCopy(byteContainer, bytePtr, 11, 20);
     endianSwap(byteContainer, bytePtr, 21, 24);
-    byteContainer[25] = *(bytePtr + 25);
-    byteContainer[26] = *(bytePtr + 26);
-    directCopy(byteContainer, bytePtr, 27, 28);
-    byteContainer[29] = *(bytePtr + 29);
-    byteContainer[30] = *(bytePtr + 30);
-    byteContainer[31] = *(bytePtr + 31);
-    byteContainer[32] = *(bytePtr + 32);
-    byteContainer[33] = *(bytePtr + 33);
+    directCopy(byteContainer, bytePtr, 25, 33);
     endianSwap(byteContainer, bytePtr, 34, 37);
     byteContainer[38] = *(bytePtr + 38);
 }
@@ -75,8 +66,5 @@ void parseStockTradingAction(ByteContainer& byteContainer, Byte* bytePtr) noexce
     endianSwap(byteContainer, bytePtr, 1, 2);
     endianSwap(byteContainer, bytePtr, 3, 4);
     endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 18);
-    byteContainer[19] = *(bytePtr + 19);
-    byteContainer[20] = *(bytePtr + 20);
-    directCopy(byteContainer, bytePtr, 21, 24);
+    directCopy(byteContainer, bytePtr, 11, 24);
 }
