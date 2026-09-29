@@ -242,3 +242,19 @@ void parseBrokenTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexce
     endianSwap(byteContainer, bytePtr, 5, 10);
     endianSwap(byteContainer, bytePtr, 11, 18);
 }
+
+void parseNOIIMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
+    byteContainer[0] = *bytePtr;
+    endianSwap(byteContainer, bytePtr, 1, 2);
+    endianSwap(byteContainer, bytePtr, 3, 4);
+    endianSwap(byteContainer, bytePtr, 5, 10);
+    endianSwap(byteContainer, bytePtr, 11, 18);
+    endianSwap(byteContainer, bytePtr, 19, 26);
+    byteContainer[27] = *(bytePtr + 27);
+    directCopy(byteContainer, bytePtr, 28, 35);
+    endianSwap(byteContainer, bytePtr, 36, 39);
+    endianSwap(byteContainer, bytePtr, 40, 43);
+    endianSwap(byteContainer, bytePtr, 44, 47);
+    byteContainer[48] = *(bytePtr + 48);
+    byteContainer[49] = *(bytePtr + 49);
+}
