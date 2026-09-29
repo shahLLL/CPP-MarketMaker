@@ -250,10 +250,10 @@ TEST_CASE("PARSER TESTCASE #9", "[parseMWCBDeclineLevelMessage]") {
 TEST_CASE("PARSER TESTCASE #10", "[parseMWCBStatusMessage]") {
     ByteContainer byteContainer = ByteContainer{};
     Byte test[] = {
-        std::byte{0x57}, std::byte{0x05}, std::byte{0x2C},
-        std::byte{0x01}, std::byte{0xC8}, std::byte{0x00},
-        std::byte{0x00}, std::byte{0xCE}, std::byte{0x07},
-        std::byte{0xF2}, std::byte{0x34}, std::byte{0x31}
+        Byte{0x57}, Byte{0x05}, Byte{0x2C},
+        Byte{0x01}, Byte{0xC8}, Byte{0x00},
+        Byte{0x00}, Byte{0xCE}, Byte{0x07},
+        Byte{0xF2}, Byte{0x34}, Byte{0x31}
     };
     parseMWCBStatusMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
@@ -261,4 +261,29 @@ TEST_CASE("PARSER TESTCASE #10", "[parseMWCBStatusMessage]") {
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
     directCompare(byteContainer, test, 11, 11);
+}
+
+TEST_CASE("PARSER TESTCASE #11", "[parseQuotingPeriodUpdate]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x4B}, Byte{0x05}, Byte{0x2C},
+        Byte{0x01}, Byte{0xC8}, Byte{0x00}, 
+        Byte{0x00}, Byte{0xCE}, Byte{0x07},
+        Byte{0xF2}, Byte{0x34}, Byte{0x4E},
+        Byte{0x56}, Byte{0x44}, Byte{0x41},
+        Byte{0x20}, Byte{0x20}, Byte{0x20},
+        Byte{0x20}, Byte{0x00}, Byte{0x00},
+        Byte{0x85}, Byte{0x98}, Byte{0x41},
+        Byte{0x00}, Byte{0x02}, Byte{0x49},
+        Byte{0xF0}
+    };
+    parseQuotingPeriodUpdate(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 22);
+    directCompare(byteContainer, test, 23, 23);
+    endianCompare(byteContainer, test, 24, 27);
 }
