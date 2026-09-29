@@ -151,5 +151,31 @@ TEST_CASE("PARSER TESTCASE #5", "[parseStockDirectory]") {
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
-    directCompare(byteContainer, test, 11, 19);
+    directCompare(byteContainer, test, 11, 20);
+    endianCompare(byteContainer, test, 21, 24);
+    directCompare(byteContainer, test, 25, 33);
+    endianCompare(byteContainer, test, 34, 37);
+    directCompare(byteContainer, test, 38, 38);
+}
+
+TEST_CASE("PARSER TESTCASE #5", "[parseStockTradingAction]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        std::byte{0x48}, std::byte{0x05}, std::byte{0x2C},
+        std::byte{0x00}, std::byte{0x07}, std::byte{0x00}, 
+        std::byte{0x00}, std::byte{0x3A}, std::byte{0xDE}, 
+        std::byte{0x68}, std::byte{0xB1}, std::byte{0x41}, 
+        std::byte{0x41}, std::byte{0x50}, std::byte{0x4C}, 
+        std::byte{0x20}, std::byte{0x20}, std::byte{0x20},
+        std::byte{0x20}, std::byte{0x54}, std::byte{0x00},
+        std::byte{0x4D}, std::byte{0x56}, std::byte{0x49},
+        std::byte{0x20}
+    };
+
+    parseStockTradingAction(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    directCompare(byteContainer, test, 11, 24);
 }
