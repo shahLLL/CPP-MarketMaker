@@ -221,3 +221,28 @@ TEST_CASE("PARSER TESTCASE #8", "[parseMarketParticipantPosition]") {
     directCompare(byteContainer, test, 11, 25);
 }
 
+TEST_CASE("PARSER TESTCASE #9", "[parseMWCBDeclineLevelMessage]") {
+    ByteContainer byteContainer = ByteContainer{};
+    Byte test[] = {
+        Byte{0x56}, Byte{0x00}, Byte{0x00},
+        Byte{0x00}, Byte{0x01}, Byte{0x00}, 
+        Byte{0x00}, Byte{0x0C}, Byte{0xE0}, 
+        Byte{0x7F}, Byte{0x23}, Byte{0x00},
+        Byte{0x00}, Byte{0x00}, Byte{0x10},
+        Byte{0x4C}, Byte{0x53}, Byte{0x3C},
+        Byte{0x00}, Byte{0x00}, Byte{0x00},
+        Byte{0x00}, Byte{0x12}, Byte{0xA0},
+        Byte{0x5F}, Byte{0x20}, Byte{0x00},
+        Byte{0x00}, Byte{0x00}, Byte{0x00},
+        Byte{0x14}, Byte{0xF4}, Byte{0x6B},
+        Byte{0x04}, Byte{0x00}
+    };
+    parseMWCBDeclineLevelMessage(byteContainer, test);
+    directCompare(byteContainer, test, 0, 0);
+    endianCompare(byteContainer, test, 1, 2);
+    endianCompare(byteContainer, test, 3, 4);
+    endianCompare(byteContainer, test, 5, 10);
+    endianCompare(byteContainer, test, 11, 18);
+    endianCompare(byteContainer, test, 19, 26);
+    endianCompare(byteContainer, test, 27, 34);
+}
