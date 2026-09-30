@@ -1,11 +1,22 @@
 #pragma once
+#include <cstddef>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "types.hpp"
 
 inline constexpr Int8 NULL_MESSAGE_SIGNAL = -1;
+inline constexpr SizeT ITCH_INCREMENT = 2;
 
 // Return size of message given messageType
 [[nodiscard]] const Int8 getMessageType(Alpha messageType);
-
 
 /* Parser Helper Functions */
 void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept;
@@ -35,7 +46,52 @@ void parseDLWCRPD(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 
 // ITCH Parser class
 class ITCHParser {
+    VoidPtr mappedData = nullptr;
+    SizeT fileSize = 0;
+    Byte* currentPtr = nullptr;
+    Byte* endPtr = nullptr;
+
     public:
-    ITCHParser() = default;
-    ~ITCHParser() = default;
+        explicit ITCHParser(const CharPtr filePath) {
+            int fileDescriptor = ::open(filePath, O_RDONLY);
+            if (fileDescriptor == -1) { throw std::runtime_error("FAILED TO OPEN FILE"); }
+
+            struct stat st{};
+            if (::fstat(fileDescriptor, &st) == -1) {
+                ::close(fileDescriptor);
+                throw std::runtime_error("FSTAT FAILED");
+            }
+            fileSize = static_cast<SizeT>(st.st_size);
+
+            if (fileSize == 0) {
+                ::close(fileDescriptor);
+                return;
+            }
+
+            mappedData = ::mmap(nullptr, fileSize, PROT_READ, MAP_PRIVATE, fileDescriptor, 0);
+            if (mappedData == MAP_FAILED) {
+                ::close(fileDescriptor);
+                throw std::runtime_error("MMAP FAILED");
+            }
+            currentPtr = reinterpret_cast<Byte*>(mappedData) + ITCH_INCREMENT;
+            endPtr = currentPtr + fileSize;
+   
+            ::close(fileDescriptor);
+        };
+
+        [[nodiscard]] const Bool hasNext() const noexcept { return currentPtr < endPtr; }
+        void getNext(ITCHMessage& messageContainer) const {
+            if(currentPtr >= endPtr) { throw std::runtime_error("GETNEXT NOT POSSIBLE, FILE EMPTY"); }
+            messageContainer.messageType = static_cast<Alpha>(*currentPtr);
+            messageContainer.data = currentPtr;
+        }
+        void increment() {
+            if(currentPtr >= endPtr) { throw std::runtime_error("INCREMENT NOT POSSIBLE, FILE EMPTY"); }
+            Alpha messageChar = static_cast<Alpha>(*currentPtr);
+            Int8 messageCode = getMessageType(messageChar);
+            if(messageCode == NULL_MESSAGE_SIGNAL) { throw std::runtime_error("ERROR PARSING FILE"); }
+            currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
+        }
+
+        ~ITCHParser() { ::munmap(mappedData, fileSize); };
 };
