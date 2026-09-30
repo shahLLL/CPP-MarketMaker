@@ -77,10 +77,35 @@ class ITCHParser {
         };
 
         [[nodiscard]] const Bool hasNext() const noexcept { return currentPtr < endPtr; }
-        void getNext(ITCHMessage& messageContainer) const {
-            if(currentPtr >= endPtr) { throw std::runtime_error("GETNEXT NOT POSSIBLE, FILE EMPTY"); }
-            messageContainer.messageType = static_cast<Alpha>(*currentPtr);
-            messageContainer.data = currentPtr;
+
+        void parseNext(ByteContainer& byteContainer) const {
+            if(currentPtr >= endPtr) { throw std::runtime_error("PARSENEXT NOT POSSIBLE, FILE EMPTY"); }
+            Alpha messageType = static_cast<Alpha>(*currentPtr);
+            switch(messageType) {
+                case 'S': parseSystemEventMessage(byteContainer, currentPtr); break;
+                case 'R': parseStockDirectory(byteContainer, currentPtr); break;
+                case 'H': parseStockTradingAction(byteContainer, currentPtr); break;
+                case 'Y': parseRegSHORestriction(byteContainer, currentPtr); break;
+                case 'L': parseMarketParticipantPosition(byteContainer, currentPtr); break;
+                case 'V': parseMWCBDeclineLevelMessage(byteContainer, currentPtr); break;
+                case 'W': parseMWCBStatusMessage(byteContainer, currentPtr); break;
+                case 'K': parseQuotingPeriodUpdate(byteContainer, currentPtr); break;
+                case 'J': parseLULDAuctionCollar(byteContainer, currentPtr); break;
+                case 'h': parseOperationalHalt(byteContainer, currentPtr); break;
+                case 'A': parseAddOrderMessage(byteContainer, currentPtr); break;
+                case 'F': parseAddOrderMPIDAttributionMessage(byteContainer, currentPtr); break;
+                case 'E': parseOrderExecutedMessage(byteContainer, currentPtr); break;
+                case 'C': parseOrderExecutedWithPriceMessage(byteContainer, currentPtr); break;
+                case 'X': parseOrderCancelMessage(byteContainer, currentPtr); break;
+                case 'D': parseOrderDeleteMessage(byteContainer, currentPtr); break;
+                case 'U': parseOrderReplaceMessage(byteContainer, currentPtr); break;
+                case 'P': parseTradeMessage(byteContainer, currentPtr); break;
+                case 'Q': parseCrossTradeMessage(byteContainer, currentPtr); break;
+                case 'B': parseBrokenTradeMessage(byteContainer, currentPtr); break;
+                case 'I': parseNOIIMessage(byteContainer, currentPtr); break;
+                case 'O': parseDLWCRPD(byteContainer, currentPtr); break;
+                default: throw std::runtime_error("PARSENEXT NOT POSSIBLE, UNKNOWN MESSAGE TYPE");
+            }
         }
         void increment() {
             if(currentPtr >= endPtr) { throw std::runtime_error("INCREMENT NOT POSSIBLE, FILE EMPTY"); }
