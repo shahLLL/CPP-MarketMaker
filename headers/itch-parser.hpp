@@ -1,10 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <stdexcept>
-#include <string>
-#include <string_view>
 #include <utility>
-
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -93,5 +90,27 @@ class ITCHParser {
             currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
         }
 
-        ~ITCHParser() { ::munmap(mappedData, fileSize); };
+        ~ITCHParser() { ::munmap(mappedData, fileSize); }
+
+        // Non-copyable
+        ITCHParser(const ITCHParser&) = delete;
+        ITCHParser& operator=(const ITCHParser&) = delete;
+
+        // Movable
+        ITCHParser(ITCHParser&& other) noexcept
+            : mappedData(std::exchange(other.mappedData, nullptr)),
+            fileSize(std::exchange(other.fileSize, 0)),
+            currentPtr(std::exchange(other.currentPtr, nullptr)),
+            endPtr(std::exchange(other.endPtr, nullptr)) {}
+
+        ITCHParser& operator=(ITCHParser&& other) noexcept {
+            if (this != &other) {
+                this->~ITCHParser();
+                mappedData = std::exchange(other.mappedData, nullptr);
+                fileSize = std::exchange(other.fileSize, 0);
+                currentPtr = std::exchange(other.currentPtr, nullptr);
+                endPtr = std::exchange(other.endPtr, nullptr);
+            }
+            return *this;
+        }
 };
