@@ -67,3 +67,8 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Data
+data/
+# .DS_Store
+.DS_Store
