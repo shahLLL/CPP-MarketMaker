@@ -11,10 +11,10 @@ int main(int argc, char* argv[]) {
     std::cout << "CPP Market Maker" << std::endl;
     const char* filePath = "./data/itch12kSample.bin";
     ITCHParser itchParser = ITCHParser(filePath);
-    ITCHMessage itchMessage = ITCHMessage{};
+    ByteContainer byteContainer{};
     while(itchParser.hasNext()) {
-        itchParser.getNext(itchMessage);
-        std::cout << itchMessage.messageType << std::endl;
+        itchParser.parseNext(byteContainer);
+        std::cout << static_cast<Alpha>(byteContainer[0]) << std::endl;
         itchParser.increment();
     }
     return 0;
