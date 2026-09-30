@@ -52,7 +52,7 @@ class ITCHParser {
     Byte* endPtr = nullptr;
 
     public:
-        explicit ITCHParser(const CharPtr filePath) {
+        explicit ITCHParser(FilePath filePath) {
             int fileDescriptor = ::open(filePath, O_RDONLY);
             if (fileDescriptor == -1) { throw std::runtime_error("FAILED TO OPEN FILE"); }
 
@@ -88,7 +88,7 @@ class ITCHParser {
         void increment() {
             if(currentPtr >= endPtr) { throw std::runtime_error("INCREMENT NOT POSSIBLE, FILE EMPTY"); }
             Alpha messageChar = static_cast<Alpha>(*currentPtr);
-            Int8 messageCode = getMessageType(messageChar);
+            const Int8 messageCode = getMessageType(messageChar);
             if(messageCode == NULL_MESSAGE_SIGNAL) { throw std::runtime_error("ERROR PARSING FILE"); }
             currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
         }

@@ -34,7 +34,7 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB TESTS "tests/*.cpp")
 
 # Create Executables
-add_executable(mm ${MAIN})
+add_executable(mm ${MAIN} ${SOURCES})
 add_executable(unit_tests ${SOURCES} ${TESTS})
 
 # Link against the Catch2 v3 main entry point target

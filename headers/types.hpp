@@ -14,7 +14,7 @@ using SizeT = std::size_t;
 using Byte = std::byte;
 using ByteContainer = std::array<Byte, BYTE_CONTAINER_SIZE>;
 using VoidPtr = void*;
-using CharPtr = char*;
+using FilePath = const char*;
 
 // Itch Message Struct
 struct ITCHMessage { Alpha messageType; Byte* data; };
