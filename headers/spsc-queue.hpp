@@ -16,7 +16,7 @@ class SPSCQueue{
     static constexpr SizeT capacity = SizeT{1} << exponent; // Capacity must be power of 2 to enusre efficent increment.
     static constexpr SizeT mask = capacity - 1;
     static_assert(exponent < sizeof(SizeT) * 8 - 1, "SPSCQUEUE: EXPONENT CAPACITY EXCEEDED");
-    static_assert(capacity * sizeof(T) <= SPSCQueueMaxBytes, "SPSCQUEUE: CAPACITY EXCEEDED");
+    static_assert(capacity * sizeof(ByteContainer) <= SPSCQueueMaxBytes, "SPSCQUEUE: CAPACITY EXCEEDED");
     ByteContainer buf[capacity];
 
     public:
@@ -36,14 +36,14 @@ class SPSCQueue{
             return true;
         };
 
-        bool dequeue(ByteContainer& popedVal) {
+        bool dequeue(void (*processorFunction)(const ByteContainer&)) {
             SizeT popCursorSpot = popCursor.load(std::memory_order_relaxed);
             if(cachedPushCursor == popCursorSpot) { 
                 cachedPushCursor = pushCursor.load(std::memory_order_acquire);
                 // Empty
                 if(cachedPushCursor == popCursorSpot) return false;
             } 
-            popedVal = buf[popCursorSpot];
+            processorFunction(buf[popCursorSpot]);
             popCursor.store((popCursorSpot + 1) & (mask), std::memory_order_release);
             return true;
         };
