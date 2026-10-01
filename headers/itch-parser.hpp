@@ -44,7 +44,7 @@ void parseNOIIMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 void parseDLWCRPD(ByteContainer& byteContainer, Byte* bytePtr) noexcept;
 
 // ITCH Parser class
-class ITCHParser {
+class ITCHParser final {
     VoidPtr mappedData = nullptr;
     SizeT fileSize = 0;
     Byte* currentPtr = nullptr;
