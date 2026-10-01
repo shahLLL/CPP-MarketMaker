@@ -28,6 +28,34 @@
     }
 }
 
+[[nodiscard]] const Bool validMessageType(Alpha messageType) {
+    switch(messageType) {
+        case 'S': return false;
+        case 'R': return false;
+        case 'H': return false;
+        case 'Y': return false;
+        case 'L': return false;
+        case 'V': return false;
+        case 'W': return false;
+        case 'K': return false;
+        case 'J': return false;
+        case 'h': return false;
+        case 'A': return true;
+        case 'F': return true;
+        case 'E': return true;
+        case 'C': return true;
+        case 'X': return true;
+        case 'D': return true;
+        case 'U': return true;
+        case 'P': return false;
+        case 'Q': return false;
+        case 'B': return false;
+        case 'I': return false;
+        case 'O': return false;
+        default: return false;
+    }
+}
+
 void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept {
     SizeT end = tail;
     while(head <= end) {

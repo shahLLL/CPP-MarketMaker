@@ -14,6 +14,8 @@ inline constexpr SizeT ITCH_INCREMENT = 2;
 
 // Return size of message given messageType
 [[nodiscard]] const Int8 getMessageType(Alpha messageType);
+// Return true if valid message, false otherwise
+[[nodiscard]] const Bool validMessageType(Alpha messageType);
 
 /* Parser Helper Functions */
 void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept;

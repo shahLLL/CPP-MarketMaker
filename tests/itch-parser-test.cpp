@@ -663,3 +663,33 @@ TEST_CASE("PARSER TESTCASE #25", "[parseDLWCRPD]") {
     endianCompare(byteContainer, test, 40, 43);
     endianCompare(byteContainer, test, 44, 47);
 }
+
+TEST_CASE("PARSER TESTCASE #26", "[validMessageType]") {
+    REQUIRE(!validMessageType('S'));
+    REQUIRE(!validMessageType('R'));
+    REQUIRE(!validMessageType('H'));
+    REQUIRE(!validMessageType('Y'));
+    REQUIRE(!validMessageType('L'));
+    REQUIRE(!validMessageType('V'));
+    REQUIRE(!validMessageType('W'));
+    REQUIRE(!validMessageType('K'));
+    REQUIRE(!validMessageType('J'));
+    REQUIRE(!validMessageType('h'));
+    REQUIRE(validMessageType('A'));
+    REQUIRE(validMessageType('F'));
+    REQUIRE(validMessageType('E'));
+    REQUIRE(validMessageType('C'));
+    REQUIRE(validMessageType('X'));
+    REQUIRE(validMessageType('D'));
+    REQUIRE(validMessageType('U'));
+    REQUIRE(!validMessageType('P'));
+    REQUIRE(!validMessageType('Q'));
+    REQUIRE(!validMessageType('B'));
+    REQUIRE(!validMessageType('I'));
+    REQUIRE(!validMessageType('O'));
+
+    REQUIRE(!validMessageType('r'));
+    REQUIRE(!validMessageType('Z'));
+    REQUIRE(!validMessageType('3'));
+    REQUIRE(!validMessageType('?'));
+}
