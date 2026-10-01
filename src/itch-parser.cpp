@@ -31,7 +31,7 @@
 [[nodiscard]] const Bool validMessageType(Alpha messageType) {
     switch(messageType) {
         case 'S': return false;
-        case 'R': return false;
+        case 'R': return true;
         case 'H': return false;
         case 'Y': return false;
         case 'L': return false;

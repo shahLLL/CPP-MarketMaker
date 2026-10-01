@@ -666,7 +666,7 @@ TEST_CASE("PARSER TESTCASE #25", "[parseDLWCRPD]") {
 
 TEST_CASE("PARSER TESTCASE #26", "[validMessageType]") {
     REQUIRE(!validMessageType('S'));
-    REQUIRE(!validMessageType('R'));
+    REQUIRE(validMessageType('R'));
     REQUIRE(!validMessageType('H'));
     REQUIRE(!validMessageType('Y'));
     REQUIRE(!validMessageType('L'));

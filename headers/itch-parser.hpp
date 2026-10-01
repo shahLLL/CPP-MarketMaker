@@ -74,6 +74,7 @@ class ITCHParser {
             }
             currentPtr = reinterpret_cast<Byte*>(mappedData) + ITCH_INCREMENT;
             endPtr = currentPtr + fileSize;
+            increment();
    
             ::close(fileDescriptor);
         };
@@ -109,12 +110,17 @@ class ITCHParser {
                 default: throw std::runtime_error("PARSENEXT NOT POSSIBLE, UNKNOWN MESSAGE TYPE");
             }
         }
+
         void increment() {
-            if(currentPtr >= endPtr) { throw std::runtime_error("INCREMENT NOT POSSIBLE, FILE EMPTY"); }
-            Alpha messageChar = static_cast<Alpha>(*currentPtr);
-            const Int8 messageCode = getMessageType(messageChar);
-            if(messageCode == NULL_MESSAGE_SIGNAL) { throw std::runtime_error("ERROR PARSING FILE"); }
-            currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
+            Bool incrementOnce = false;
+            while(currentPtr < endPtr) {
+                Alpha messageChar = static_cast<Alpha>(*currentPtr);
+                if((validMessageType(messageChar)) && incrementOnce) break;
+                const Int8 messageCode = getMessageType(messageChar);
+                if(messageCode == NULL_MESSAGE_SIGNAL) { throw std::runtime_error("ERROR PARSING FILE"); }
+                currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
+                incrementOnce = true;
+            }
         }
 
         ~ITCHParser() { ::munmap(mappedData, fileSize); }
