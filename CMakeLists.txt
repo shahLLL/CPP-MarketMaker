@@ -6,11 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Optimise Build
-if(NOT MSVC)
-    add_compile_options(-O3 -march=native)
-endif()
-
 # Enable CMake's built-in testing features (CTest)
 include(CTest)
 
@@ -35,7 +30,15 @@ file(GLOB TESTS "tests/*.cpp")
 
 # Create Executables
 add_executable(mm ${MAIN} ${SOURCES})
+add_executable(mm-debug ${MAIN} ${SOURCES})
 add_executable(unit_tests ${SOURCES} ${TESTS})
+
+# Compile and Link Options
+if(NOT MSVC)
+    target_compile_options(mm PRIVATE -O3 -march=native)
+    target_compile_options(mm-debug PRIVATE -fsanitize=thread -g -O1)
+    target_link_options(mm-debug PRIVATE -fsanitize=thread)
+endif()
 
 # Link against the Catch2 v3 main entry point target
 target_link_libraries(unit_tests PRIVATE Catch2::Catch2WithMain)
