@@ -39,16 +39,16 @@ class OrderBook final {
     std::array<Int32, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
-    UInt64 bitMap[BITMAP_CAPACITY];
+    UInt64 bitmap[BITMAP_CAPACITY];
     std::unordered_map<UInt64, Locator> orderLocator;
     PoolAllocator<Order> orderPool;
 
     // Internal Helper Functions
     Int32 cursorSeekUp(const Int32& inputCursor) const noexcept;
     Int32 cursorSeekDown(const Int32& inputCursor) const noexcept;
-    void removeFromBitMap(const Int32& inputCursor) noexcept;
-    void addToBitMap(const Int32& inputCursor) noexcept;
-    bool checkBitMap(const Int32& inputCurosr) noexcept;
+    void removeFromBitmap(const Int32& inputCursor) noexcept;
+    void addToBitmap(const Int32& inputCursor) noexcept;
+    bool checkBitmap(const Int32& inputCursor) noexcept;
 
     public:
         // Constructor & Destructor
