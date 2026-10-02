@@ -40,10 +40,10 @@ class OrderBook final {
         ~OrderBook() = default;
 
         // Book Modifyers
-        void addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
+        const Bool addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
         void cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept;
         void deleteOrder(const UInt64 id) noexcept;
-        void replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
+        const Bool replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
 
         // Accessor Methods
         const UInt64 getQuantity(const UInt32 price) { 
@@ -59,7 +59,7 @@ class OrderBook final {
             return (bestAskCursor + TICK_MIN); 
         }
         const Int32 getMidPrice() const noexcept {
-            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return 0;
+            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return NULL_CURSOR;
             if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
             if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor + TICK_MIN;
             return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;

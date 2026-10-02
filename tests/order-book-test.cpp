@@ -3,11 +3,11 @@
 
 TEST_CASE("ORDERBOOK TESTCASE #1", "[addOrder]") {
     OrderBook orderBook = OrderBook();
-    UInt32 testPrice1 = 20;
+    UInt32 testPrice1 = 50'020;
     UInt32 testQuantity1 = 12;
-    UInt32 testPrice2 = 200;
+    UInt32 testPrice2 = 50'200;
     UInt32 testQuantity2 = 14;
-    UInt32 testPrice3 = 25;
+    UInt32 testPrice3 = 50'025;
     UInt32 testQuantity3 = 10;
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
     orderBook.addOrder(1, Side::BUY, testQuantity1, testPrice1);
@@ -24,7 +24,7 @@ TEST_CASE("ORDERBOOK TESTCASE #1", "[addOrder]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #2", "[cancelOrExecuteOrder]") {
     OrderBook orderBook = OrderBook();
-    UInt32 testPrice1 = 20;
+    UInt32 testPrice1 = 50'020;
     UInt32 testQuantity1 = 12;
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
     orderBook.addOrder(1, Side::BUY, testQuantity1, testPrice1);
@@ -34,7 +34,7 @@ TEST_CASE("ORDERBOOK TESTCASE #2", "[cancelOrExecuteOrder]") {
     orderBook.cancelOrExecuteOrder(1, 8);
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
 
-    UInt32 testPrice2 = 30;
+    UInt32 testPrice2 = 50'030;
     UInt32 testQuantity2 = 15;
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
     orderBook.addOrder(2, Side::SELL, testQuantity2, testPrice2);
@@ -47,7 +47,7 @@ TEST_CASE("ORDERBOOK TESTCASE #2", "[cancelOrExecuteOrder]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #3", "[deleteOrder]") {
     OrderBook orderBook = OrderBook();
-    UInt32 testPrice1 = 20;
+    UInt32 testPrice1 = 50'020;
     UInt32 testQuantity1 = 12;
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
     orderBook.addOrder(1, Side::BUY, testQuantity1, testPrice1);
@@ -55,7 +55,7 @@ TEST_CASE("ORDERBOOK TESTCASE #3", "[deleteOrder]") {
     orderBook.deleteOrder(1);
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
 
-    UInt32 testPrice2 = 30;
+    UInt32 testPrice2 = 50'030;
     UInt32 testQuantity2 = 15;
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
     orderBook.addOrder(2, Side::SELL, testQuantity2, testPrice2);
@@ -66,9 +66,9 @@ TEST_CASE("ORDERBOOK TESTCASE #3", "[deleteOrder]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #4", "[replaceOrder]") {
     OrderBook orderBook = OrderBook();
-    UInt32 testPriceOld1 = 20;
+    UInt32 testPriceOld1 = 50'020;
     UInt32 testQuantityOld1 = 12;
-    UInt32 testPriceNew1 = 40;
+    UInt32 testPriceNew1 = 50'040;
     UInt32 testQuantityNew1 = 40;
     REQUIRE(orderBook.getQuantity(testPriceOld1) == 0);
     REQUIRE(orderBook.getQuantity(testPriceNew1) == 0);
@@ -79,9 +79,9 @@ TEST_CASE("ORDERBOOK TESTCASE #4", "[replaceOrder]") {
     REQUIRE(orderBook.getQuantity(testPriceOld1) == 0);
     REQUIRE(orderBook.getQuantity(testPriceNew1) == testQuantityNew1);
 
-    UInt32 testPriceOld2 = 80;
+    UInt32 testPriceOld2 = 50'080;
     UInt32 testQuantityOld2 = 42;
-    UInt32 testPriceNew2 = 90;
+    UInt32 testPriceNew2 = 50'090;
     UInt32 testQuantityNew2 = 14;
     REQUIRE(orderBook.getQuantity(testPriceOld2) == 0);
     REQUIRE(orderBook.getQuantity(testPriceNew2) == 0);
@@ -95,9 +95,9 @@ TEST_CASE("ORDERBOOK TESTCASE #4", "[replaceOrder]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #5", "[getBestBid]") {
     OrderBook orderBook = OrderBook();
-    UInt32 price1 = 20;
-    UInt32 price2 = 10;
-    UInt32 price3 = 30;
+    UInt32 price1 = 50'020;
+    UInt32 price2 = 50'010;
+    UInt32 price3 = 50'030;
     REQUIRE(orderBook.getBestBid() == NULL_CURSOR);
     orderBook.addOrder(1, Side::BUY, 1, price1);
     REQUIRE(orderBook.getBestBid() == price1);
@@ -109,9 +109,9 @@ TEST_CASE("ORDERBOOK TESTCASE #5", "[getBestBid]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #6", "[getBestAsk]") {
     OrderBook orderBook = OrderBook();
-    UInt32 price1 = 50;
-    UInt32 price2 = 80;
-    UInt32 price3 = 30;
+    UInt32 price1 = 50'050;
+    UInt32 price2 = 50'080;
+    UInt32 price3 = 50'030;
     REQUIRE(orderBook.getBestAsk() == NULL_CURSOR);
     orderBook.addOrder(1, Side::SELL, 1, price1);
     REQUIRE(orderBook.getBestAsk() == price1);

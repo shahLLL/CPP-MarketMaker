@@ -43,7 +43,8 @@ void OrderBook::addToBitmap(const Int32 inputCursor) noexcept { bitmap[inputCurs
 
 Bool OrderBook::checkBitmap(const Int32 inputCursor) noexcept{ return ((bitmap[inputCursor >> 6] & (1ULL << (inputCursor & 63))) != 0); }
 
-void OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept {
+const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept {
+    if((price < TICK_MIN) || (price >= TICK_MAX)) return false;
     Int32 cursor = price - TICK_MIN;
     if((side == Side::BUY) && ((bestBidCursor == NULL_CURSOR) || (cursor > bestBidCursor))) { bestBidCursor = cursor; }
     if((side == Side::SELL) && ((bestAskCursor == NULL_CURSOR) || (cursor < bestAskCursor))) { bestAskCursor = cursor; }
@@ -54,6 +55,7 @@ void OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity
         priceLadder[cursor] = priceLadder[cursor] + quantity;
     }
     map[id] = OrderData{ price, quantity, side };
+    return true;
 }
 
 void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept {
@@ -85,8 +87,10 @@ void OrderBook::deleteOrder(const UInt64 id) noexcept {
     }
 }
 
-void OrderBook::replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept {
+const Bool OrderBook::replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept {
+    if((price < TICK_MIN) || (price >= TICK_MAX)) return false;
     Side side = map[prevId].side;
     deleteOrder(prevId);
     addOrder(newId, side, quantity, price);
+    return true;
 }
