@@ -120,3 +120,18 @@ TEST_CASE("ORDERBOOK TESTCASE #6", "[getBestAsk]") {
     orderBook.addOrder(3, Side::SELL, 1, price3);
     REQUIRE(orderBook.getBestAsk() == price3);
 }
+
+TEST_CASE("ORDERBOOK TESTCASE #7", "[getMidPrice]") {
+    OrderBook orderBook = OrderBook();
+    UInt32 price1 = 50'500;
+    UInt32 price2 = 50'100;
+    REQUIRE(orderBook.getMidPrice() == NULL_CURSOR);
+    orderBook.addOrder(1, Side::SELL, 4, price1);
+    REQUIRE(orderBook.getMidPrice() == price1);
+    orderBook.deleteOrder(1);
+    REQUIRE(orderBook.getMidPrice() == NULL_CURSOR);
+    orderBook.addOrder(2, Side::BUY, 4, price2);
+    REQUIRE(orderBook.getMidPrice() == price2);
+    orderBook.addOrder(3, Side::SELL, 4, price1);
+    REQUIRE(orderBook.getMidPrice() == (price1 + price2)/2);
+}
