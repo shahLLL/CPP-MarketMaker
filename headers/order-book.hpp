@@ -50,8 +50,14 @@ class OrderBook final {
             if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
             return 0;
         }
-        const Int32 getBestBid() const noexcept { return (bestBidCursor + TICK_MIN); }
-        const Int32 getBestAsk() const noexcept { return (bestAskCursor + TICK_MIN); }
+        const Int32 getBestBid() const noexcept { 
+            if(bestBidCursor == NULL_CURSOR) { return NULL_CURSOR; }
+            return (bestBidCursor + TICK_MIN); 
+        }
+        const Int32 getBestAsk() const noexcept { 
+            if(bestAskCursor == NULL_CURSOR) { return NULL_CURSOR; }
+            return (bestAskCursor + TICK_MIN); 
+        }
         const Int32 getMidPrice() const noexcept {
             if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return 0;
             if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
