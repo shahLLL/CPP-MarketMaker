@@ -24,7 +24,7 @@ class OrderBook final {
     std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
-    UInt64 bitmap[BITMAP_CAPACITY];
+    UInt64 bitmap[BITMAP_CAPACITY]{};
     std::unordered_map<UInt64, OrderData> map;
 
     // Internal Helper Functions
