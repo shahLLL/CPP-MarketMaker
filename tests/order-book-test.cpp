@@ -93,7 +93,7 @@ TEST_CASE("ORDERBOOK TESTCASE #4", "[replaceOrder]") {
     REQUIRE(orderBook.getQuantity(testPriceNew2) == testQuantityNew2);
 }
 
-TEST_CASE("ORDERBOOK TESTCASE #4", "[getBestBid]") {
+TEST_CASE("ORDERBOOK TESTCASE #5", "[getBestBid]") {
     OrderBook orderBook = OrderBook();
     UInt32 price1 = 20;
     UInt32 price2 = 10;
@@ -105,4 +105,18 @@ TEST_CASE("ORDERBOOK TESTCASE #4", "[getBestBid]") {
     REQUIRE(orderBook.getBestBid() == price1);
     orderBook.addOrder(3, Side::BUY, 1, price3);
     REQUIRE(orderBook.getBestBid() == price3);
+}
+
+TEST_CASE("ORDERBOOK TESTCASE #6", "[getBestAsk]") {
+    OrderBook orderBook = OrderBook();
+    UInt32 price1 = 50;
+    UInt32 price2 = 80;
+    UInt32 price3 = 30;
+    REQUIRE(orderBook.getBestAsk() == NULL_CURSOR);
+    orderBook.addOrder(1, Side::SELL, 1, price1);
+    REQUIRE(orderBook.getBestAsk() == price1);
+    orderBook.addOrder(2, Side::SELL, 1, price2);
+    REQUIRE(orderBook.getBestAsk() == price1);
+    orderBook.addOrder(3, Side::SELL, 1, price3);
+    REQUIRE(orderBook.getBestAsk() == price3);
 }
