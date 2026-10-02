@@ -63,3 +63,32 @@ TEST_CASE("ORDERBOOK TESTCASE #3", "[deleteOrder]") {
     orderBook.deleteOrder(2);
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
 }
+
+TEST_CASE("ORDERBOOK TESTCASE #4", "[replaceOrder]") {
+    OrderBook orderBook = OrderBook();
+    UInt32 testPriceOld1 = 20;
+    UInt32 testQuantityOld1 = 12;
+    UInt32 testPriceNew1 = 40;
+    UInt32 testQuantityNew1 = 40;
+    REQUIRE(orderBook.getQuantity(testPriceOld1) == 0);
+    REQUIRE(orderBook.getQuantity(testPriceNew1) == 0);
+    orderBook.addOrder(1, Side::BUY, testQuantityOld1, testPriceOld1);
+    REQUIRE(orderBook.getQuantity(testPriceOld1) == testQuantityOld1);
+    REQUIRE(orderBook.getQuantity(testPriceNew1) == 0);
+    orderBook.replaceOrder(1, 3, testQuantityNew1, testPriceNew1);
+    REQUIRE(orderBook.getQuantity(testPriceOld1) == 0);
+    REQUIRE(orderBook.getQuantity(testPriceNew1) == testQuantityNew1);
+
+    UInt32 testPriceOld2 = 80;
+    UInt32 testQuantityOld2 = 42;
+    UInt32 testPriceNew2 = 90;
+    UInt32 testQuantityNew2 = 14;
+    REQUIRE(orderBook.getQuantity(testPriceOld2) == 0);
+    REQUIRE(orderBook.getQuantity(testPriceNew2) == 0);
+    orderBook.addOrder(2, Side::SELL, testQuantityOld2, testPriceOld2);
+    REQUIRE(orderBook.getQuantity(testPriceOld2) == testQuantityOld2);
+    REQUIRE(orderBook.getQuantity(testPriceNew2) == 0);
+    orderBook.replaceOrder(2, 4, testQuantityNew2, testPriceNew2);
+    REQUIRE(orderBook.getQuantity(testPriceOld2) == 0);
+    REQUIRE(orderBook.getQuantity(testPriceNew2) == testQuantityNew2);
+}
