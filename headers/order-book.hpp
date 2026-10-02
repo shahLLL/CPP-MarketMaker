@@ -4,8 +4,8 @@
 #include "types.hpp"
 
 // Constant Expressions
-inline constexpr SizeT TICK_MAX = 2'000'000'000; // Max value of security in cents.
-inline constexpr SizeT TICK_MIN = 0; // Min value of security in cents.
+inline constexpr SizeT TICK_MAX = 280'000; // Max value of security in cents.
+inline constexpr SizeT TICK_MIN = 50'000; // Min value of security in cents.
 inline constexpr SizeT PRICE_LADDER_CAPACITY = TICK_MAX - TICK_MIN;
 inline constexpr SizeT BITMAP_CAPACITY = (PRICE_LADDER_CAPACITY % 64) == 0 ? 
     (PRICE_LADDER_CAPACITY/64) : (PRICE_LADDER_CAPACITY/64) + 1;
@@ -46,6 +46,10 @@ class OrderBook final {
         void replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
 
         // Accessor Methods
+        const UInt64 getQuantity(const UInt32 price) { 
+            if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
+            return 0;
+        }
         const Int32 getBestBid() const noexcept { return (bestBidCursor + TICK_MIN); }
         const Int32 getBestAsk() const noexcept { return (bestAskCursor + TICK_MIN); }
         const Int32 getMidPrice() const noexcept {
