@@ -28,11 +28,11 @@ class OrderBook final {
     std::unordered_map<UInt64, OrderData> map;
 
     // Internal Helper Functions
-    Int32 cursorSeekUp(const Int32& inputCursor) const noexcept;
-    Int32 cursorSeekDown(const Int32& inputCursor) const noexcept;
-    void removeFromBitmap(const Int32& inputCursor) noexcept;
-    void addToBitmap(const Int32& inputCursor) noexcept;
-    bool checkBitmap(const Int32& inputCursor) noexcept;
+    Int32 cursorSeekUp(const Int32 inputCursor) const noexcept;
+    Int32 cursorSeekDown(const Int32 inputCursor) const noexcept;
+    void removeFromBitmap(const Int32 inputCursor) noexcept;
+    void addToBitmap(const Int32 inputCursor) noexcept;
+    bool checkBitmap(const Int32 inputCursor) noexcept;
 
     public:
         // Constructor & Destructor
@@ -40,10 +40,10 @@ class OrderBook final {
         ~OrderBook() = default;
 
         // Book Modifyers
-        void addOrder(const UInt64& id, const Side side, const UInt32& quantity, const UInt32& price) noexcept;
-        void cancelOrExecuteOrder(const UInt64& id, const UInt32& quantity) noexcept;
-        void deleteOrder(const UInt64& id) noexcept;
-        void replaceOrder(const UInt64& prevId, const UInt64& newId, const UInt32& quantity, const UInt32& price) noexcept;
+        void addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
+        void cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept;
+        void deleteOrder(const UInt64 id) noexcept;
+        void replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
 
         // Accessor Methods
         const Int32 getBestBid() const noexcept { return (bestBidCursor + TICK_MIN); }
