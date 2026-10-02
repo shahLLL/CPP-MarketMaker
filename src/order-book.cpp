@@ -66,3 +66,23 @@ void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noe
         if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
     }
 }
+
+void OrderBook::deleteOrder(const UInt64 id) noexcept {
+    OrderData &orderData = map[id];
+    Int32 cursor = orderData.price - TICK_MIN;
+    Side side = orderData.side;
+    priceLadder[cursor] = priceLadder[cursor] - orderData.quantity;
+    
+    map.erase(id);
+    if(priceLadder[cursor] == 0) {
+        removeFromBitmap(cursor);
+        if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
+        if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
+    }
+}
+
+void OrderBook::replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept {
+    Side side = map[prevId].side;
+    deleteOrder(prevId);
+    addOrder(newId, side, quantity, price);
+}
