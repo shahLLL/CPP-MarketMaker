@@ -54,8 +54,8 @@ class OrderBook final {
         const Int32 getBestAsk() const noexcept { return (bestAskCursor + TICK_MIN); }
         const Int32 getMidPrice() const noexcept {
             if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return 0;
-            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor;
-            if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor;
+            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
+            if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor + TICK_MIN;
             return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;
         }
 };
