@@ -21,6 +21,7 @@ struct OrderData final {
 
 // OrderBook Class
 class OrderBook final {
+    // Member Variables
     std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
