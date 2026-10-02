@@ -13,35 +13,19 @@ inline constexpr SizeT BITMAP_CAPACITY = (PRICE_LADDER_CAPACITY % 64) == 0 ?
 inline constexpr Int32 NULL_CURSOR = -1;
 
 // Structs
-struct Order final {
-    UInt64 id;
+struct OrderData final {
     UInt64 price;
     UInt64 quantity;
-    Order* prev;
-    Order* next;
-};
-
-struct PriceLevel final {
-    UInt64 quantity;
-    Order* head = nullptr;
-    Order* tail = nullptr;
-};
-
-struct Locator final {
-    UInt64 price;
-    UInt64 quantity;
-    Order* node;
     Side side;
 };
 
 // OrderBook Class
 class OrderBook final {
-    std::array<Int32, PRICE_LADDER_CAPACITY> priceLadder;
+    std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
     UInt64 bitmap[BITMAP_CAPACITY];
-    std::unordered_map<UInt64, Locator> orderLocator;
-    PoolAllocator<Order> orderPool;
+    std::unordered_map<UInt64, OrderData> map;
 
     // Internal Helper Functions
     Int32 cursorSeekUp(const Int32& inputCursor) const noexcept;
@@ -56,11 +40,11 @@ class OrderBook final {
         ~OrderBook() = default;
 
         // Book Modifyers
-        void addOrder();
-        void executeOrder();
-        void cancelOrder();
-        void deleteOrder();
-        void replaceOrder();
+        void addOrder(const UInt64& id, const Side side, const UInt32& quantity, const UInt32& price) noexcept;
+        void executeOrder(const UInt64& id, const UInt32& quantity) noexcept;
+        void cancelOrder(const UInt64& id, const UInt32& quantity) noexcept;
+        void deleteOrder(const UInt64& id) noexcept;
+        void replaceOrder(const UInt64& prevId, const UInt64& newId, const UInt32& quantity, const UInt32& price) noexcept;
 
         // Accessor Methods
         const Int32 getBestBid() const noexcept { return (bestBidCursor + TICK_MIN); }
