@@ -50,4 +50,19 @@ void OrderBook::addOrder(const UInt64& id, const Side side, const UInt32& quanti
     if(!checkBitmap(cursor)) { addToBitmap(cursor); }
     priceLadder[cursor] = priceLadder[cursor] + quantity;
     map[id] = OrderData{ price, quantity, side };
-} 
+}
+
+void OrderBook::cancelOrExecuteOrder(const UInt64& id, const UInt32& quantity) noexcept {
+    OrderData &orderData = map[id];
+    Int32 cursor = orderData.price - TICK_MIN;
+    Side side = orderData.side;
+    orderData.quantity = orderData.quantity - quantity;
+    priceLadder[cursor] = priceLadder[cursor] - quantity;
+
+    if(orderData.quantity == 0) { map.erase(id); }
+    if(priceLadder[cursor] == 0) {
+        removeFromBitmap(cursor);
+        if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
+        if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
+    }
+}

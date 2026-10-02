@@ -41,8 +41,7 @@ class OrderBook final {
 
         // Book Modifyers
         void addOrder(const UInt64& id, const Side side, const UInt32& quantity, const UInt32& price) noexcept;
-        void executeOrder(const UInt64& id, const UInt32& quantity) noexcept;
-        void cancelOrder(const UInt64& id, const UInt32& quantity) noexcept;
+        void cancelOrExecuteOrder(const UInt64& id, const UInt32& quantity) noexcept;
         void deleteOrder(const UInt64& id) noexcept;
         void replaceOrder(const UInt64& prevId, const UInt64& newId, const UInt32& quantity, const UInt32& price) noexcept;
 
