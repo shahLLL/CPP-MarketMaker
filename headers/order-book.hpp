@@ -2,7 +2,6 @@
 #include <array>
 #include <unordered_map>
 #include "types.hpp"
-#include "pool-allocator.hpp"
 
 // Constant Expressions
 inline constexpr SizeT TICK_MAX = 2'000'000'000; // Max value of security in cents.
