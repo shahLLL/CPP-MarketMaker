@@ -28,3 +28,27 @@ const Bool StockMap::replaceOrder(const UInt16 stockLocate, const UInt64 prevId,
     if(!containsStock(stockLocate)) return false;
     return stockMap[stockLocate].orderBook.replaceOrder(prevId, newId, quantity, price);
 };
+
+const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
+    std::vector<SymbolData> perSymbolData;
+    perSymbolData.reserve(stockMap.size());
+
+    for (const auto& [stockLocate, stockContainer] : stockMap) {
+        perSymbolData.emplace_back(
+            SymbolData {
+                {
+                    stockContainer.symbol[0], stockContainer.symbol[1],
+                    stockContainer.symbol[2], stockContainer.symbol[3],
+                    stockContainer.symbol[4], stockContainer.symbol[5],
+                    stockContainer.symbol[6], stockContainer.symbol[7],
+                },
+                stockContainer.orderBook.getBestBid(),
+                stockContainer.orderBook.getBestAsk(),
+                stockContainer.orderBook.getMidPrice(),
+                stockLocate
+            }
+        );
+    }
+
+    return perSymbolData;
+};
