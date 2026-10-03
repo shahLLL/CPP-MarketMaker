@@ -89,3 +89,38 @@ TEST_CASE("STOCKMAP TESTCASE #2", "[addOrder]") {
     REQUIRE(!stockMap.addOrder(stockLocate1, 7, Side::BUY, testQuantity3, testPrice5));
     REQUIRE(!stockMap.addOrder(stockLocate1, 8, Side::SELL, testQuantity3, testPrice5));
 }
+
+TEST_CASE("STOCKMAP TESTCASE #3", "[replaceOrder]") {
+    const UInt16 stockLocate1 = 1;
+    UInt32 testPriceOld1 = 50'020;
+    UInt32 testQuantityOld1 = 12;
+    UInt32 testPriceNew1 = 50'040;
+    UInt32 testQuantityNew1 = 40;
+    UInt32 testPriceOld2 = 50'080;
+    UInt32 testQuantityOld2 = 42;
+    UInt32 testPriceNew2 = 50'090;
+    UInt32 testQuantityNew2 = 14;
+
+    const Byte stockSymbol1[] = {
+        Byte{0x84}, 
+        Byte{0x83}, 
+        Byte{0x76}, 
+        Byte{0x65},
+        Byte{0x00}, 
+        Byte{0x00},
+        Byte{0x00}, 
+        Byte{0x00}
+    };
+    StockMap stockMap = StockMap();
+    stockMap.addStock(stockLocate1, stockSymbol1);
+
+    REQUIRE(stockMap.addOrder(stockLocate1, 1, Side::BUY, testQuantityOld1, testPriceOld1));
+    REQUIRE(stockMap.replaceOrder(stockLocate1, 1, 3, testQuantityNew1, testPriceNew1));
+    REQUIRE(!stockMap.replaceOrder(stockLocate1, 3, 5, testQuantityNew1, 19'000));
+    REQUIRE(!stockMap.replaceOrder(stockLocate1, 3, 5, testQuantityNew1, 419'000));
+
+    REQUIRE(stockMap.addOrder(stockLocate1, 2, Side::SELL, testQuantityOld2, testPriceOld2));
+    REQUIRE(stockMap.replaceOrder(stockLocate1, 2, 4, testQuantityNew2, testPriceNew2));
+    REQUIRE(!stockMap.replaceOrder(stockLocate1, 4, 6, testQuantityNew2, 10'000));
+    REQUIRE(!stockMap.replaceOrder(stockLocate1, 4, 6, testQuantityNew2, 400'000));
+}
