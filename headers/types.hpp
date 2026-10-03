@@ -10,6 +10,7 @@ using Alpha = char;
 using Int = int;
 using Int8 = std::int8_t;
 using Int32 = std::int32_t;
+using UInt16 = std::uint16_t;
 using UInt32 = std::uint32_t;
 using UInt64 = std::uint64_t;
 using Bool = bool;
