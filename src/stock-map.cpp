@@ -1,8 +1,8 @@
 #include "../headers/stock-map.hpp"
 
-void StockMap::addStockSymbol(const UInt16 stockLocate, Byte* stockSymbol) noexcept {
-    stockMap[stockLocate] = StockContainer{};
-    std::memcpy(stockMap[stockLocate].symbol, stockSymbol, SYMBOL_SIZE);
+void StockMap::addStockSymbol(const UInt16 stockLocate, const Byte* stockSymbol) noexcept {
+    auto [it, inserted] = stockMap.try_emplace(stockLocate);
+    std::memcpy(it->second.symbol, stockSymbol, SYMBOL_SIZE);
 };
 
 const Bool StockMap::addOrder(const UInt16 stockLocate, const UInt64 id, 

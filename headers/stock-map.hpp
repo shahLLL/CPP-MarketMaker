@@ -14,7 +14,7 @@ class StockMap final {
     public:
         StockMap() = default;
         ~StockMap() = default;
-        void addStockSymbol(const UInt16 stockLocate, Byte* stockSymbol) noexcept;
+        void addStockSymbol(const UInt16 stockLocate, const Byte* stockSymbol) noexcept;
         const Bool addOrder(const UInt16 stockLocate, const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
         void cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity) noexcept;
         void deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept;
