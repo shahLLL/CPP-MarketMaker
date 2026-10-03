@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <cstring>
 #include <vector>
+#include <iostream>
 
 #include "types.hpp"
 #include "order-book.hpp"
@@ -31,5 +32,6 @@ class StockMap final {
         void cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity) noexcept;
         void deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept;
         const Bool replaceOrder(const UInt16 stockLocate, const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
-        const std::vector<SymbolData> getPerSymbolData() const noexcept; 
+        const std::vector<SymbolData> getPerSymbolData() const noexcept;
+        void processEntry(ByteContainer& byteContainer) const noexcept;
 };

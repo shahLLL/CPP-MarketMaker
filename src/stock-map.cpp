@@ -52,3 +52,7 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
 
     return perSymbolData;
 };
+
+void StockMap::processEntry(ByteContainer& byteContainer) const noexcept {
+    std::cout << static_cast<Alpha>(byteContainer[0]) << std::endl;
+};

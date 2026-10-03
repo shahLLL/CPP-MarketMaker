@@ -4,10 +4,7 @@
 #include "headers/types.hpp"
 #include "headers/itch-parser.hpp"
 #include "headers/spsc-queue.hpp"
-
-void processorFunction(const ByteContainer& byteContainer) noexcept {
-    std::cout << static_cast<Alpha>(byteContainer[0]) << std::endl;
-}
+#include "headers/stock-map.hpp"
 
 int main(int argc, char* argv[]) {
     if(argc != 2) {
@@ -18,8 +15,8 @@ int main(int argc, char* argv[]) {
     std::cout << "CPP Market Maker" << std::endl;
     const char* filePath = "./data/itch12kSample.bin";
     ITCHParser itchParser = ITCHParser(filePath);
+    StockMap stockMap = StockMap();
     SPSCQueue<10> spscQueue = SPSCQueue<10>(); 
-    ByteContainer byteContainer{};
     std::atomic<bool> done{false};
 
     std::thread prod([&] {
@@ -32,9 +29,9 @@ int main(int argc, char* argv[]) {
 
     std::thread cons([&] {
         while((!done.load(std::memory_order_acquire))) {
-            spscQueue.dequeue(processorFunction);
+            spscQueue.dequeue(stockMap);
         }
-        while(spscQueue.dequeue(processorFunction)) {}
+        while(spscQueue.dequeue(stockMap)) {}
     });
 
     prod.join();

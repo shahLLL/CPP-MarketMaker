@@ -4,6 +4,7 @@
 #include <new>
 #include "types.hpp"
 #include "itch-parser.hpp"
+#include "stock-map.hpp"
 
 template <SizeT exponent>
 class SPSCQueue final {
@@ -36,14 +37,14 @@ class SPSCQueue final {
             return true;
         };
 
-        bool dequeue(void (*processorFunction)(const ByteContainer&)) {
+        bool dequeue(StockMap& stockMap) {
             SizeT popCursorSpot = popCursor.load(std::memory_order_relaxed);
             if(cachedPushCursor == popCursorSpot) { 
                 cachedPushCursor = pushCursor.load(std::memory_order_acquire);
                 // Empty
                 if(cachedPushCursor == popCursorSpot) return false;
             } 
-            processorFunction(buf[popCursorSpot]);
+            stockMap.processEntry(buf[popCursorSpot]);
             popCursor.store((popCursorSpot + 1) & (mask), std::memory_order_release);
             return true;
         };
