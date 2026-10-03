@@ -1,5 +1,4 @@
 #include <catch2/catch_test_macros.hpp>
-#include <stdexcept>
 #include "../headers/stock-map.hpp"
 
 const SymbolData symbolDataFromStockLocate(const std::vector<SymbolData> symbolDataVec, const UInt16 stockLocate) {
@@ -138,36 +137,13 @@ TEST_CASE("STOCKMAP TESTCASE #4", "[getPerSymbolData]") {
     const UInt32 price1 = 50'500;
     const UInt32 price2 = 50'100;
 
-    const Byte stockSymbol1[] = {
-        Byte{0x84}, 
-        Byte{0x83}, 
-        Byte{0x76}, 
-        Byte{0x65},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
-    const Byte stockSymbol2[] = {
-        Byte{0x77}, 
-        Byte{0x83}, 
-        Byte{0x70}, 
-        Byte{0x84},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
-    const Byte stockSymbol3[] = {
-        Byte{0x65}, 
-        Byte{0x77}, 
-        Byte{0x90}, 
-        Byte{0x78},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
+    const Byte stockSymbol1[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    const Byte stockSymbol2[] = { Byte{'M'}, Byte{'S'}, Byte{'F'}, Byte{'T'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    const Byte stockSymbol3[] = { Byte{'A'}, Byte{'M'}, Byte{'Z'}, Byte{'N'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+
     StockMap stockMap = StockMap();
     stockMap.addStock(stockLocate1, stockSymbol1);
     stockMap.addStock(stockLocate2, stockSymbol2);
@@ -184,12 +160,15 @@ TEST_CASE("STOCKMAP TESTCASE #4", "[getPerSymbolData]") {
     SymbolData symbolData2 = symbolDataFromStockLocate(result, stockLocate2);
     SymbolData symbolData3 = symbolDataFromStockLocate(result, stockLocate3);
 
+    REQUIRE(std::string_view(symbolData1.symbol, SYMBOL_SIZE) == "TSLA    ");
     REQUIRE(symbolData1.bestBid == NULL_CURSOR);
     REQUIRE(symbolData1.bestAsk == price1);
     REQUIRE(symbolData1.midPrice == price1);
+    REQUIRE(std::string_view(symbolData2.symbol, SYMBOL_SIZE) == "MSFT    ");
     REQUIRE(symbolData2.bestBid == price2);
     REQUIRE(symbolData2.bestAsk == NULL_CURSOR);
     REQUIRE(symbolData2.midPrice == price2);
+    REQUIRE(std::string_view(symbolData3.symbol, SYMBOL_SIZE) == "AMZN    ");
     REQUIRE(symbolData3.bestBid == price2);
     REQUIRE(symbolData3.bestAsk == price1);
     REQUIRE(symbolData3.midPrice == (price1 + price2)/2);
