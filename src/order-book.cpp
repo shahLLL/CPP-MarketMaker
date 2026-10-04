@@ -58,7 +58,7 @@ const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 qu
     return true;
 }
 
-const Bool OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept {
+const Bool OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity, const Bool isExecute) noexcept {
     if(map.find(id) == map.end()) return false;
     OrderData &orderData = map[id];
     Int32 cursor = orderData.price - TICK_MIN;
@@ -74,6 +74,8 @@ const Bool OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantit
         if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
         if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
     }
+    if((isExecute) && (side == Side::BUY)) { inventory = inventory + quantity; }
+    if((isExecute) && (side == Side::SELL)) { inventory = inventory - quantity; }
 
     return true;
 }

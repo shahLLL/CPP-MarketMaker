@@ -22,6 +22,7 @@ struct OrderData final {
 class OrderBook final {
     // Member Variables
     std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
+    Int32 inventory = 0;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
     UInt64 bitmap[BITMAP_CAPACITY]{};
@@ -41,11 +42,12 @@ class OrderBook final {
 
         // Book Modifyers
         const Bool addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
-        const Bool cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept;
+        const Bool cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity, const Bool isExecute) noexcept;
         const Bool deleteOrder(const UInt64 id) noexcept;
         const Bool replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
 
         // Accessor Methods
+        const UInt32 getInventory() { return inventory; }
         const UInt64 getQuantity(const UInt32 price) { 
             if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
             return 0;

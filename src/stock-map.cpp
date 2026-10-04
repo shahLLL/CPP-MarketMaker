@@ -15,8 +15,8 @@ const Bool StockMap::addOrder(const UInt16 stockLocate, const UInt64 id,
     return stockMap[stockLocate].orderBook.addOrder(id, side, quantity, price);
 };
 
-void StockMap::cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity) noexcept {
-    stockMap[stockLocate].orderBook.cancelOrExecuteOrder(id, quantity);
+void StockMap::cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity, const Bool isExecute) noexcept {
+    stockMap[stockLocate].orderBook.cancelOrExecuteOrder(id, quantity, isExecute);
 };
 
 void StockMap::deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept {
@@ -75,12 +75,21 @@ void StockMap::processEntry(ByteContainer& byteContainer) {
         }
 
         case 'E':
-        case 'C':
+        case 'C': {
+            cancelOrExecuteOrder(
+                convertBytes<UInt16>(byteContainer.data() + 1),
+                convertBytes<UInt64>(byteContainer.data() + 11),
+                convertBytes<UInt32>(byteContainer.data() + 19),
+                true
+            );
+            break;
+        }
         case 'X': {
             cancelOrExecuteOrder(
                 convertBytes<UInt16>(byteContainer.data() + 1),
                 convertBytes<UInt64>(byteContainer.data() + 11),
-                convertBytes<UInt32>(byteContainer.data() + 19)  
+                convertBytes<UInt32>(byteContainer.data() + 19),
+                false
             );
             break;
         }
