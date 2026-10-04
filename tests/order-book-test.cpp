@@ -34,21 +34,25 @@ TEST_CASE("ORDERBOOK TESTCASE #2", "[cancelOrExecuteOrder]") {
     UInt32 testPrice1 = 50'020;
     UInt32 testQuantity1 = 12;
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
+    REQUIRE(!orderBook.cancelOrExecuteOrder(1, 4));
     REQUIRE(orderBook.addOrder(1, Side::BUY, testQuantity1, testPrice1));
     REQUIRE(orderBook.getQuantity(testPrice1) == testQuantity1);
-    orderBook.cancelOrExecuteOrder(1, 4);
+    REQUIRE(!orderBook.cancelOrExecuteOrder(1, testQuantity1 + 1));
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 4));
     REQUIRE(orderBook.getQuantity(testPrice1) == testQuantity1 - 4);
-    orderBook.cancelOrExecuteOrder(1, 8);
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 8));
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
 
     UInt32 testPrice2 = 50'030;
     UInt32 testQuantity2 = 15;
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
+    REQUIRE(!orderBook.cancelOrExecuteOrder(2, 5));
     REQUIRE(orderBook.addOrder(2, Side::SELL, testQuantity2, testPrice2));
     REQUIRE(orderBook.getQuantity(testPrice2) == testQuantity2);
-    orderBook.cancelOrExecuteOrder(2, 5);
+    REQUIRE(!orderBook.cancelOrExecuteOrder(2, testQuantity2 + 1));
+    REQUIRE(orderBook.cancelOrExecuteOrder(2, 5));
     REQUIRE(orderBook.getQuantity(testPrice2) == testQuantity2 - 5);
-    orderBook.cancelOrExecuteOrder(2, 10);
+    REQUIRE(orderBook.cancelOrExecuteOrder(2, 10));
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
 }
 
@@ -57,17 +61,19 @@ TEST_CASE("ORDERBOOK TESTCASE #3", "[deleteOrder]") {
     UInt32 testPrice1 = 50'020;
     UInt32 testQuantity1 = 12;
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
+    REQUIRE(!orderBook.deleteOrder(1));
     REQUIRE(orderBook.addOrder(1, Side::BUY, testQuantity1, testPrice1));
     REQUIRE(orderBook.getQuantity(testPrice1) == testQuantity1);
-    orderBook.deleteOrder(1);
+    REQUIRE(orderBook.deleteOrder(1));
     REQUIRE(orderBook.getQuantity(testPrice1) == 0);
 
     UInt32 testPrice2 = 50'030;
     UInt32 testQuantity2 = 15;
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
+    REQUIRE(!orderBook.deleteOrder(2));
     REQUIRE(orderBook.addOrder(2, Side::SELL, testQuantity2, testPrice2));
     REQUIRE(orderBook.getQuantity(testPrice2) == testQuantity2);
-    orderBook.deleteOrder(2);
+    REQUIRE(orderBook.deleteOrder(2));
     REQUIRE(orderBook.getQuantity(testPrice2) == 0);
 }
 

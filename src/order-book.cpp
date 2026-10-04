@@ -58,12 +58,13 @@ const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 qu
     return true;
 }
 
-void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept {
-    if(map.find(id) == map.end()) return;
+const Bool OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept {
+    if(map.find(id) == map.end()) return false;
     OrderData &orderData = map[id];
     Int32 cursor = orderData.price - TICK_MIN;
     Side side = orderData.side;
-    if((orderData.quantity < quantity) || (priceLadder[cursor] < quantity)) return;
+
+    if((orderData.quantity < quantity) || (priceLadder[cursor] < quantity)) return false;
     orderData.quantity = orderData.quantity - quantity;
     priceLadder[cursor] = priceLadder[cursor] - quantity;
 
@@ -73,21 +74,25 @@ void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noe
         if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
         if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
     }
+
+    return true;
 }
 
-void OrderBook::deleteOrder(const UInt64 id) noexcept {
-    if(map.find(id) == map.end()) return;
+const Bool OrderBook::deleteOrder(const UInt64 id) noexcept {
+    if(map.find(id) == map.end()) return false;
     OrderData &orderData = map[id];
     Int32 cursor = orderData.price - TICK_MIN;
     Side side = orderData.side;
-    priceLadder[cursor] = priceLadder[cursor] - orderData.quantity;
-    
+
+    priceLadder[cursor] = priceLadder[cursor] - orderData.quantity;    
     map.erase(id);
     if(priceLadder[cursor] == 0) {
         removeFromBitmap(cursor);
         if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
         if((side == Side::SELL) && (bestAskCursor == cursor)) { bestAskCursor = cursorSeekUp(cursor); }
     }
+
+    return true;
 }
 
 const Bool OrderBook::replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept {
