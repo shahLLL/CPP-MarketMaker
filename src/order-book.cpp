@@ -59,9 +59,11 @@ const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 qu
 }
 
 void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept {
+    if(map.find(id) == map.end()) return;
     OrderData &orderData = map[id];
     Int32 cursor = orderData.price - TICK_MIN;
     Side side = orderData.side;
+    if((orderData.quantity < quantity) || (priceLadder[cursor] < quantity)) return;
     orderData.quantity = orderData.quantity - quantity;
     priceLadder[cursor] = priceLadder[cursor] - quantity;
 
@@ -74,6 +76,7 @@ void OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noe
 }
 
 void OrderBook::deleteOrder(const UInt64 id) noexcept {
+    if(map.find(id) == map.end()) return;
     OrderData &orderData = map[id];
     Int32 cursor = orderData.price - TICK_MIN;
     Side side = orderData.side;
@@ -89,6 +92,7 @@ void OrderBook::deleteOrder(const UInt64 id) noexcept {
 
 const Bool OrderBook::replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept {
     if((price < TICK_MIN) || (price >= TICK_MAX)) return false;
+    if(map.find(prevId) == map.end()) return false;
     Side side = map[prevId].side;
     deleteOrder(prevId);
     addOrder(newId, side, quantity, price);
