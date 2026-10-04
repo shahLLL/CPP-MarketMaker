@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "../headers/stock-map.hpp"
 
+// Helper Function
 const SymbolData symbolDataFromStockLocate(const std::vector<SymbolData> symbolDataVec, const UInt16 stockLocate) {
     for(auto& symbolData: symbolDataVec) { if(symbolData.stockLocate == stockLocate) return symbolData; }
     throw std::runtime_error("NO MATCHING STOCK LOCATE");
@@ -11,36 +12,12 @@ TEST_CASE("STOCKMAP TESTCASE #1", "[addStock]") {
     const UInt16 stockLocate2 = 2;
     const UInt16 stockLocate3 = 3;
 
-    const Byte stockSymbol1[] = {
-        Byte{0x84}, 
-        Byte{0x83}, 
-        Byte{0x76}, 
-        Byte{0x65},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
-    const Byte stockSymbol2[] = {
-        Byte{0x77}, 
-        Byte{0x83}, 
-        Byte{0x70}, 
-        Byte{0x84},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
-    const Byte stockSymbol3[] = {
-        Byte{0x65}, 
-        Byte{0x77}, 
-        Byte{0x90}, 
-        Byte{0x78},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
+    const Byte stockSymbol1[] = { Byte{'A'}, Byte{'M'}, Byte{'Z'}, Byte{'N'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    const Byte stockSymbol2[] = { Byte{'M'}, Byte{'S'}, Byte{'F'}, Byte{'T'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    const Byte stockSymbol3[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
     StockMap stockMap = StockMap();
 
     REQUIRE(!stockMap.containsStock(stockLocate1));
@@ -65,16 +42,8 @@ TEST_CASE("STOCKMAP TESTCASE #2", "[addOrder]") {
     UInt32 testPrice4 = 20'025;
     UInt32 testPrice5 = 350'025;
 
-    const Byte stockSymbol1[] = {
-        Byte{0x84}, 
-        Byte{0x83}, 
-        Byte{0x76}, 
-        Byte{0x65},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
+    const Byte stockSymbol1[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
     StockMap stockMap = StockMap();
 
     REQUIRE(!stockMap.addOrder(stockLocate1, 1, Side::BUY, testQuantity1, testPrice1));
@@ -106,16 +75,8 @@ TEST_CASE("STOCKMAP TESTCASE #3", "[replaceOrder]") {
     UInt32 testPriceNew2 = 50'090;
     UInt32 testQuantityNew2 = 14;
 
-    const Byte stockSymbol1[] = {
-        Byte{0x84}, 
-        Byte{0x83}, 
-        Byte{0x76}, 
-        Byte{0x65},
-        Byte{0x00}, 
-        Byte{0x00},
-        Byte{0x00}, 
-        Byte{0x00}
-    };
+    const Byte stockSymbol1[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
     StockMap stockMap = StockMap();
     stockMap.addStock(stockLocate1, stockSymbol1);
 
@@ -172,4 +133,54 @@ TEST_CASE("STOCKMAP TESTCASE #4", "[getPerSymbolData]") {
     REQUIRE(symbolData3.bestBid == price2);
     REQUIRE(symbolData3.bestAsk == price1);
     REQUIRE(symbolData3.midPrice == (price1 + price2)/2);
+}
+
+TEST_CASE("STOCKMAP TESTCASE #5", "[cancelOrExecuteOrder]") {
+    const UInt16 stockLocate1 = 1;
+    const UInt32 testPrice1 = 50'020;
+    const UInt32 testQuantity1 = 12;
+    const UInt32 testPrice2 = 50'030;
+    const UInt32 testQuantity2 = 15;
+
+    StockMap stockMap = StockMap();
+    const Byte stockSymbol1[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    stockMap.addStock(stockLocate1, stockSymbol1);
+
+    REQUIRE(!stockMap.cancelOrExecuteOrder(stockLocate1, 1, 4));
+    REQUIRE(stockMap.addOrder(stockLocate1, 1, Side::BUY, testQuantity1, testPrice1));
+    REQUIRE(!stockMap.cancelOrExecuteOrder(2, 1, 4));
+    REQUIRE(!stockMap.cancelOrExecuteOrder(stockLocate1, 1, testQuantity1 + 1));
+    REQUIRE(stockMap.cancelOrExecuteOrder(stockLocate1, 1, 4));
+    REQUIRE(stockMap.cancelOrExecuteOrder(stockLocate1, 1, 8));
+
+    REQUIRE(!stockMap.cancelOrExecuteOrder(stockLocate1, 2, 5));
+    REQUIRE(stockMap.addOrder(stockLocate1, 2, Side::SELL, testQuantity2, testPrice2));
+    REQUIRE(!stockMap.cancelOrExecuteOrder(2, 2, 5));
+    REQUIRE(!stockMap.cancelOrExecuteOrder(stockLocate1, 2, testQuantity2 + 1));
+    REQUIRE(stockMap.cancelOrExecuteOrder(stockLocate1, 2, 5));
+    REQUIRE(stockMap.cancelOrExecuteOrder(stockLocate1, 2, 10));
+}
+
+TEST_CASE("STOCKMAP TESTCASE #6", "[deleteOrder]") {
+    const UInt16 stockLocate1 = 1;
+    const UInt32 testPrice1 = 50'020;
+    const UInt32 testQuantity1 = 12;
+    const UInt32 testPrice2 = 50'030;
+    const UInt32 testQuantity2 = 15;
+
+    StockMap stockMap = StockMap();
+    const Byte stockSymbol1[] = { Byte{'T'}, Byte{'S'}, Byte{'L'}, Byte{'A'},
+                              Byte{' '}, Byte{' '}, Byte{' '}, Byte{' '} };
+    stockMap.addStock(stockLocate1, stockSymbol1);
+
+    REQUIRE(!stockMap.deleteOrder(stockLocate1, 1));
+    REQUIRE(stockMap.addOrder(stockLocate1, 1, Side::BUY, testQuantity1, testPrice1));
+    REQUIRE(!stockMap.deleteOrder(2, 1));
+    REQUIRE(stockMap.deleteOrder(stockLocate1, 1));
+    
+    REQUIRE(!stockMap.deleteOrder(stockLocate1, 2));
+    REQUIRE(stockMap.addOrder(stockLocate1, 2, Side::SELL, testQuantity2, testPrice2));
+    REQUIRE(!stockMap.deleteOrder(2, 2));
+    REQUIRE(stockMap.deleteOrder(stockLocate1, 2));
 }

@@ -15,12 +15,14 @@ const Bool StockMap::addOrder(const UInt16 stockLocate, const UInt64 id,
     return stockMap[stockLocate].orderBook.addOrder(id, side, quantity, price);
 };
 
-void StockMap::cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity) noexcept {
-    stockMap[stockLocate].orderBook.cancelOrExecuteOrder(id, quantity);
+const Bool StockMap::cancelOrExecuteOrder(const UInt16 stockLocate, const UInt64 id, const UInt32 quantity) noexcept {
+    if(!containsStock(stockLocate)) return false;
+    return stockMap[stockLocate].orderBook.cancelOrExecuteOrder(id, quantity);
 };
 
-void StockMap::deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept {
-    stockMap[stockLocate].orderBook.deleteOrder(id);
+const Bool StockMap::deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept {
+    if(!containsStock(stockLocate)) return false;
+    return stockMap[stockLocate].orderBook.deleteOrder(id);
 };
 
 const Bool StockMap::replaceOrder(const UInt16 stockLocate, const UInt64 prevId, const UInt64 newId, 
