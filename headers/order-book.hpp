@@ -11,15 +11,16 @@ inline constexpr SizeT BITMAP_CAPACITY = (PRICE_LADDER_CAPACITY % 64) == 0 ?
     (PRICE_LADDER_CAPACITY/64) : (PRICE_LADDER_CAPACITY/64) + 1;
 inline constexpr Int32 NULL_CURSOR = -1;
 
-// Structs
-struct OrderData final {
-    UInt64 price;
-    UInt64 quantity;
-    Side side;
-};
-
 // OrderBook Class
 class OrderBook final {
+    
+    // OrderData Struct
+    struct OrderData final {
+        UInt64 price;
+        UInt64 quantity;
+        Side side;
+    };
+
     // Member Variables
     std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
@@ -39,29 +40,15 @@ class OrderBook final {
         OrderBook() = default;
         ~OrderBook() = default;
 
+        // Accessor Methods
+        const UInt64 getQuantity(const UInt32 price);
+        const Int32 getBestBid() const noexcept;
+        const Int32 getBestAsk() const noexcept;
+        const Int32 getMidPrice() const noexcept;
+
         // Book Modifyers
         const Bool addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
         const Bool cancelOrExecuteOrder(const UInt64 id, const UInt32 quantity) noexcept;
         const Bool deleteOrder(const UInt64 id) noexcept;
         const Bool replaceOrder(const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
-
-        // Accessor Methods
-        const UInt64 getQuantity(const UInt32 price) { 
-            if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
-            return 0;
-        }
-        const Int32 getBestBid() const noexcept { 
-            if(bestBidCursor == NULL_CURSOR) { return NULL_CURSOR; }
-            return (bestBidCursor + TICK_MIN); 
-        }
-        const Int32 getBestAsk() const noexcept { 
-            if(bestAskCursor == NULL_CURSOR) { return NULL_CURSOR; }
-            return (bestAskCursor + TICK_MIN); 
-        }
-        const Int32 getMidPrice() const noexcept {
-            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return NULL_CURSOR;
-            if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
-            if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor + TICK_MIN;
-            return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;
-        }
 };

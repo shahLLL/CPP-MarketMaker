@@ -43,6 +43,28 @@ void OrderBook::addToBitmap(const Int32 inputCursor) noexcept { bitmap[inputCurs
 
 Bool OrderBook::checkBitmap(const Int32 inputCursor) noexcept{ return ((bitmap[inputCursor >> 6] & (1ULL << (inputCursor & 63))) != 0); }
 
+const UInt64 OrderBook::getQuantity(const UInt32 price) { 
+    if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
+    return 0;
+}
+
+const Int32 OrderBook::getBestBid() const noexcept { 
+    if(bestBidCursor == NULL_CURSOR) { return NULL_CURSOR; }
+    return (bestBidCursor + TICK_MIN); 
+}
+
+const Int32 OrderBook::getBestAsk() const noexcept { 
+    if(bestAskCursor == NULL_CURSOR) { return NULL_CURSOR; }
+    return (bestAskCursor + TICK_MIN); 
+}
+        
+const Int32 OrderBook::getMidPrice() const noexcept {
+    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return NULL_CURSOR;
+    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
+    if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor + TICK_MIN;
+    return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;
+}
+
 const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept {
     if((price < TICK_MIN) || (price >= TICK_MAX)) return false;
     Int32 cursor = price - TICK_MIN;
