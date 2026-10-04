@@ -3,7 +3,6 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-#include <iostream>
 
 #include "types.hpp"
 #include "order-book.hpp"
