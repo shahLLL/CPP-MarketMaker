@@ -36,5 +36,14 @@ int main(int argc, char* argv[]) {
 
     prod.join();
     cons.join();
+
+    for(auto& stockSymbol: stockMap.getPerSymbolData()) {
+        std::cout << stockSymbol.symbol << std::endl;
+        std::cout << stockSymbol.stockLocate << std::endl;
+        std::cout << stockSymbol.bestBid << std::endl;
+        std::cout << stockSymbol.bestAsk << std::endl;
+        std::cout << stockSymbol.midPrice << std::endl;
+    }
+
     return 0;
 }

@@ -41,6 +41,7 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
                     stockContainer.symbol[2], stockContainer.symbol[3],
                     stockContainer.symbol[4], stockContainer.symbol[5],
                     stockContainer.symbol[6], stockContainer.symbol[7],
+                    NULL_ALPHA
                 },
                 stockContainer.orderBook.getBestBid(),
                 stockContainer.orderBook.getBestAsk(),
@@ -53,6 +54,55 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
     return perSymbolData;
 };
 
-void StockMap::processEntry(ByteContainer& byteContainer) const noexcept {
-    std::cout << static_cast<Alpha>(byteContainer[0]) << std::endl;
+void StockMap::processEntry(ByteContainer& byteContainer) {
+    Alpha messageType = extractAlpha(byteContainer[0]);
+    switch (messageType) {
+        case 'R': {
+            addStock(convertBytes<UInt16>(byteContainer.data() + 1), (byteContainer.data() + 11));
+            break;
+        }
+
+        case 'A':
+        case 'F': {
+            addOrder(
+                convertBytes<UInt16>(byteContainer.data() + 1), 
+                convertBytes<UInt64>(byteContainer.data() + 11),
+                extractAlpha(byteContainer[19]) == 'B' ? Side::BUY : Side::SELL,
+                convertBytes<UInt32>(byteContainer.data() + 20),
+                convertBytes<UInt32>(byteContainer.data() + 32)
+            );
+            break;
+        }
+
+        case 'E':
+        case 'C':
+        case 'X': {
+            cancelOrExecuteOrder(
+                convertBytes<UInt16>(byteContainer.data() + 1),
+                convertBytes<UInt64>(byteContainer.data() + 11),
+                convertBytes<UInt32>(byteContainer.data() + 19)  
+            );
+            break;
+        }
+
+        case 'D': {
+            deleteOrder(
+                convertBytes<UInt16>(byteContainer.data() + 1),
+                convertBytes<UInt64>(byteContainer.data() + 11)
+            );
+            break;
+        }
+
+        case 'U': {
+            replaceOrder(
+                convertBytes<UInt16>(byteContainer.data() + 1),
+                convertBytes<UInt64>(byteContainer.data() + 11),
+                convertBytes<UInt64>(byteContainer.data() + 19),
+                convertBytes<UInt32>(byteContainer.data() + 27),
+                convertBytes<UInt32>(byteContainer.data() + 31)
+            );
+            break;
+        }
+        default: throw std::runtime_error("UNKNOWN MESSAGE TYPE");
+    }
 };
