@@ -6,12 +6,14 @@
 #include "itch-parser.hpp"
 #include "stock-map.hpp"
 
+inline constexpr SizeT CACHE_LINE_SIZE = 64;
+
 template <SizeT exponent>
 class SPSCQueue final {
-    alignas(std::hardware_destructive_interference_size) std::atomic<SizeT> pushCursor{0};
-    alignas(std::hardware_destructive_interference_size) SizeT cachedPushCursor{0};
-    alignas(std::hardware_destructive_interference_size) std::atomic<SizeT> popCursor{0};
-    alignas(std::hardware_destructive_interference_size) SizeT cachedPopCursor{0};
+    alignas(CACHE_LINE_SIZE) std::atomic<SizeT> pushCursor{0};
+    alignas(CACHE_LINE_SIZE) SizeT cachedPushCursor{0};
+    alignas(CACHE_LINE_SIZE) std::atomic<SizeT> popCursor{0};
+    alignas(CACHE_LINE_SIZE) SizeT cachedPopCursor{0};
     
     static constexpr SizeT SPSCQueueMaxBytes = SizeT{1} << 20;
     static constexpr SizeT capacity = SizeT{1} << exponent; // Capacity must be power of 2 to enusre efficent increment.
