@@ -19,6 +19,7 @@ struct SymbolData final {
     const UInt16 stockLocate;
 };
 
+// StockMap Class
 class StockMap final {
 
     // StockContainer Struct

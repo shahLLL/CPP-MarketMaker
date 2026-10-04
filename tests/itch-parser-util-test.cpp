@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../headers/itch-parser.hpp"
+#include "../headers/itch-parser-util.hpp"
 
 // Helper Functions
 void directCompare(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) {
@@ -17,33 +17,33 @@ void endianCompare(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, Size
 
 // Test Cases
 TEST_CASE("PARSER TESTCASE #1", "[getMessageType]") {
-    REQUIRE(getMessageType('S') == 12);
-    REQUIRE(getMessageType('R') == 39);
-    REQUIRE(getMessageType('H') == 25);
-    REQUIRE(getMessageType('Y') == 20);
-    REQUIRE(getMessageType('L') == 26);
-    REQUIRE(getMessageType('V') == 35);
-    REQUIRE(getMessageType('W') == 12);
-    REQUIRE(getMessageType('K') == 28);
-    REQUIRE(getMessageType('J') == 35);
-    REQUIRE(getMessageType('h') == 21);
-    REQUIRE(getMessageType('A') == 36);
-    REQUIRE(getMessageType('F') == 40);
-    REQUIRE(getMessageType('E') == 31);
-    REQUIRE(getMessageType('C') == 36);
-    REQUIRE(getMessageType('X') == 23);
-    REQUIRE(getMessageType('D') == 19);
-    REQUIRE(getMessageType('U') == 35);
-    REQUIRE(getMessageType('P') == 44);
-    REQUIRE(getMessageType('Q') == 40);
-    REQUIRE(getMessageType('B') == 19);
-    REQUIRE(getMessageType('I') == 50);
-    REQUIRE(getMessageType('O') == 48);
+    REQUIRE(ITCHParserUtil::getMessageType('S') == 12);
+    REQUIRE(ITCHParserUtil::getMessageType('R') == 39);
+    REQUIRE(ITCHParserUtil::getMessageType('H') == 25);
+    REQUIRE(ITCHParserUtil::getMessageType('Y') == 20);
+    REQUIRE(ITCHParserUtil::getMessageType('L') == 26);
+    REQUIRE(ITCHParserUtil::getMessageType('V') == 35);
+    REQUIRE(ITCHParserUtil::getMessageType('W') == 12);
+    REQUIRE(ITCHParserUtil::getMessageType('K') == 28);
+    REQUIRE(ITCHParserUtil::getMessageType('J') == 35);
+    REQUIRE(ITCHParserUtil::getMessageType('h') == 21);
+    REQUIRE(ITCHParserUtil::getMessageType('A') == 36);
+    REQUIRE(ITCHParserUtil::getMessageType('F') == 40);
+    REQUIRE(ITCHParserUtil::getMessageType('E') == 31);
+    REQUIRE(ITCHParserUtil::getMessageType('C') == 36);
+    REQUIRE(ITCHParserUtil::getMessageType('X') == 23);
+    REQUIRE(ITCHParserUtil::getMessageType('D') == 19);
+    REQUIRE(ITCHParserUtil::getMessageType('U') == 35);
+    REQUIRE(ITCHParserUtil::getMessageType('P') == 44);
+    REQUIRE(ITCHParserUtil::getMessageType('Q') == 40);
+    REQUIRE(ITCHParserUtil::getMessageType('B') == 19);
+    REQUIRE(ITCHParserUtil::getMessageType('I') == 50);
+    REQUIRE(ITCHParserUtil::getMessageType('O') == 48);
 
-    REQUIRE(getMessageType('r') == NULL_MESSAGE_SIGNAL);
-    REQUIRE(getMessageType('Z') == NULL_MESSAGE_SIGNAL);
-    REQUIRE(getMessageType('3') == NULL_MESSAGE_SIGNAL);
-    REQUIRE(getMessageType('?') == NULL_MESSAGE_SIGNAL);
+    REQUIRE(ITCHParserUtil::getMessageType('r') == ITCHParserUtil::NULL_MESSAGE_SIGNAL);
+    REQUIRE(ITCHParserUtil::getMessageType('Z') == ITCHParserUtil::NULL_MESSAGE_SIGNAL);
+    REQUIRE(ITCHParserUtil::getMessageType('3') == ITCHParserUtil::NULL_MESSAGE_SIGNAL);
+    REQUIRE(ITCHParserUtil::getMessageType('?') == ITCHParserUtil::NULL_MESSAGE_SIGNAL);
 }
 
 TEST_CASE("PARSER TESTCASE #2", "[endianSwap]") {
@@ -59,10 +59,10 @@ TEST_CASE("PARSER TESTCASE #2", "[endianSwap]") {
     Byte test4[] = {Byte{0x59}, Byte{0x43}, Byte{0x4E}, Byte{0x41},
         Byte{0x50}, Byte{0x4E}, Byte{0x4E}, Byte{0x31}};
     
-    endianSwap(byteContainer1, test1, 0, 1);
-    endianSwap(byteContainer2, test2, 0, 3);
-    endianSwap(byteContainer3, test3, 0, 5);
-    endianSwap(byteContainer4, test4, 0, 7);
+    ITCHParserUtil::endianSwap(byteContainer1, test1, 0, 1);
+    ITCHParserUtil::endianSwap(byteContainer2, test2, 0, 3);
+    ITCHParserUtil::endianSwap(byteContainer3, test3, 0, 5);
+    ITCHParserUtil::endianSwap(byteContainer4, test4, 0, 7);
 
     REQUIRE(byteContainer1[0] == Byte{0x64});
     REQUIRE(byteContainer1[1] == Byte{0x00});
@@ -99,7 +99,7 @@ TEST_CASE("PARSER TESTCASE #3", "[directCopy]") {
         Byte{0x00}, Byte{0x00}
     };
 
-    directCopy(byteContainer, test, 0, 7);
+    ITCHParserUtil::directCopy(byteContainer, test, 0, 7);
     REQUIRE(byteContainer[0] == Byte{0x53});
     REQUIRE(byteContainer[1] == Byte{0x00});
     REQUIRE(byteContainer[2] == Byte{0x2A});
@@ -120,7 +120,8 @@ TEST_CASE("PARSER TESTCASE #4", "[parseSystemEventMessage]") {
         Byte{0x00}, Byte{0x01}, Byte{0xF4},
         Byte{0x4F}
     };
-    parseSystemEventMessage(byteContainer, test);
+
+    ITCHParserUtil::parseSystemEventMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -146,7 +147,7 @@ TEST_CASE("PARSER TESTCASE #5", "[parseStockDirectory]") {
         Byte{0x00}, Byte{0x00}, Byte{0x4E}
     };
 
-    parseStockDirectory(byteContainer, test);
+    ITCHParserUtil::parseStockDirectory(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -172,7 +173,7 @@ TEST_CASE("PARSER TESTCASE #6", "[parseStockTradingAction]") {
         Byte{0x20}
     };
 
-    parseStockTradingAction(byteContainer, test);
+    ITCHParserUtil::parseStockTradingAction(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -191,7 +192,8 @@ TEST_CASE("PARSER TESTCASE #7", "[parseRegSHORestriction]") {
         Byte{0x20}, Byte{0x20}, Byte{0x20}, 
         Byte{0x20}, Byte{0x31}
     };
-    parseRegSHORestriction(byteContainer, test);
+
+    ITCHParserUtil::parseRegSHORestriction(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -213,7 +215,7 @@ TEST_CASE("PARSER TESTCASE #8", "[parseMarketParticipantPosition]") {
         Byte{0x4E}, Byte{0x41}
     };
 
-    parseMarketParticipantPosition(byteContainer, test);
+    ITCHParserUtil::parseMarketParticipantPosition(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -237,7 +239,8 @@ TEST_CASE("PARSER TESTCASE #9", "[parseMWCBDeclineLevelMessage]") {
         Byte{0x14}, Byte{0xF4}, Byte{0x6B},
         Byte{0x04}, Byte{0x00}
     };
-    parseMWCBDeclineLevelMessage(byteContainer, test);
+
+    ITCHParserUtil::parseMWCBDeclineLevelMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -255,7 +258,8 @@ TEST_CASE("PARSER TESTCASE #10", "[parseMWCBStatusMessage]") {
         Byte{0x00}, Byte{0xCE}, Byte{0x07},
         Byte{0xF2}, Byte{0x34}, Byte{0x31}
     };
-    parseMWCBStatusMessage(byteContainer, test);
+
+    ITCHParserUtil::parseMWCBStatusMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -277,7 +281,8 @@ TEST_CASE("PARSER TESTCASE #11", "[parseQuotingPeriodUpdate]") {
         Byte{0x00}, Byte{0x02}, Byte{0x49},
         Byte{0xF0}
     };
-    parseQuotingPeriodUpdate(byteContainer, test);
+
+    ITCHParserUtil::parseQuotingPeriodUpdate(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -305,7 +310,7 @@ TEST_CASE("PARSER TESTCASE #12", "[parseLULDAuctionCollar]") {
         Byte{0x00}, Byte{0x02}
     };
 
-    parseLULDAuctionCollar(byteContainer, test);
+    ITCHParserUtil::parseLULDAuctionCollar(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -328,7 +333,8 @@ TEST_CASE("PARSER TESTCASE #13", "[parseOperationalHalt]") {
         Byte{0x20}, Byte{0x20}, Byte{0x20},
         Byte{0x20}, Byte{0x51}, Byte{0x48}
     };
-    parseOperationalHalt(byteContainer, test);
+
+    ITCHParserUtil::parseOperationalHalt(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -352,7 +358,8 @@ TEST_CASE("PARSER TESTCASE #14", "[parseAddOrderMessage]") {
         Byte{0x20}, Byte{0x20}, Byte{0x00},
         Byte{0x40}, Byte{0x2A}, Byte{0x88}
     };
-    parseAddOrderMessage(byteContainer, test);
+
+    ITCHParserUtil::parseAddOrderMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -382,7 +389,8 @@ TEST_CASE("PARSER TESTCASE #15", "[parseAddOrderMPIDAttributionMessage]") {
         Byte{0x41}, Byte{0x42}, Byte{0x43},
         Byte{0x44}
     };
-    parseAddOrderMPIDAttributionMessage(byteContainer, test);
+
+    ITCHParserUtil::parseAddOrderMPIDAttributionMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -410,7 +418,8 @@ TEST_CASE("PARSER TESTCASE #16", "[parseOrderExecutedMessage]") {
         Byte{0x07}, Byte{0x5B}, Byte{0xCD},
         Byte{0x15}
     };
-    parseOrderExecutedMessage(byteContainer, test);
+
+    ITCHParserUtil::parseOrderExecutedMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -436,7 +445,8 @@ TEST_CASE("PARSER TESTCASE #17", "[parseOrderExecutedWithPriceMessage]") {
         Byte{0x15}, Byte{0x59}, Byte{0x00}, 
         Byte{0x40}, Byte{0x2A}, Byte{0x88}
     };
-    parseOrderExecutedWithPriceMessage(byteContainer, test);
+
+    ITCHParserUtil::parseOrderExecutedWithPriceMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -460,7 +470,8 @@ TEST_CASE("PARSER TESTCASE #18", "[parseOrderCancelMessage]") {
        Byte{0x4A}, Byte{0x00}, Byte{0x00}, 
        Byte{0x01}, Byte{0xF4}
     };
-    parseOrderCancelMessage(byteContainer, test);
+
+    ITCHParserUtil::parseOrderCancelMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -480,7 +491,8 @@ TEST_CASE("PARSER TESTCASE #19", "[parseOrderDeleteMessage]") {
        Byte{0x72}, Byte{0x03}, Byte{0xDB},
        Byte{0x4A}
     };
-    parseOrderDeleteMessage(byteContainer, test);
+
+    ITCHParserUtil::parseOrderDeleteMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -504,7 +516,8 @@ TEST_CASE("PARSER TESTCASE #20", "[parseOrderReplaceMessage]") {
       Byte{0xF4}, Byte{0x00}, Byte{0x40},
       Byte{0x2A}, Byte{0x88}
     };
-    parseOrderReplaceMessage(byteContainer, test);
+
+    ITCHParserUtil::parseOrderReplaceMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -534,7 +547,8 @@ TEST_CASE("PARSER TESTCASE #21", "[parseTradeMessage]") {
       Byte{0x00}, Byte{0x07}, Byte{0x5B},
       Byte{0xCD}, Byte{0x15}
     };
-    parseTradeMessage(byteContainer, test);
+
+    ITCHParserUtil::parseTradeMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -565,7 +579,8 @@ TEST_CASE("PARSER TESTCASE #22", "[parseCrossTradeMessage]") {
       Byte{0x5B}, Byte{0xCD}, Byte{0x15},
       Byte{0x4F},
     };
-    parseCrossTradeMessage(byteContainer, test);
+
+    ITCHParserUtil::parseCrossTradeMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -588,7 +603,8 @@ TEST_CASE("PARSER TESTCASE #23", "[parseBrokenTradeMessage]") {
       Byte{0x07}, Byte{0x5B}, Byte{0xCD},
       Byte{0x15}
     };
-    parseBrokenTradeMessage(byteContainer, test);
+
+    ITCHParserUtil::parseBrokenTradeMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -617,7 +633,8 @@ TEST_CASE("PARSER TESTCASE #24", "[parseNOIIMessage]") {
       Byte{0x00}, Byte{0x01}, Byte{0xF4},
       Byte{0x4F}, Byte{0x41},
     };
-    parseNOIIMessage(byteContainer, test);
+
+    ITCHParserUtil::parseNOIIMessage(byteContainer, test);
     directCompare(byteContainer, test, 0, 0);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
@@ -651,7 +668,8 @@ TEST_CASE("PARSER TESTCASE #25", "[parseDLWCRPD]") {
       Byte{0x01}, Byte{0xF4}, Byte{0x00},
       Byte{0x00}, Byte{0x01}, Byte{0xF4}
     };
-    parseDLWCRPD(byteContainer, test);
+
+    ITCHParserUtil::parseDLWCRPD(byteContainer, test);
     endianCompare(byteContainer, test, 1, 2);
     endianCompare(byteContainer, test, 3, 4);
     endianCompare(byteContainer, test, 5, 10);
@@ -665,31 +683,31 @@ TEST_CASE("PARSER TESTCASE #25", "[parseDLWCRPD]") {
 }
 
 TEST_CASE("PARSER TESTCASE #26", "[validMessageType]") {
-    REQUIRE(!validMessageType('S'));
-    REQUIRE(validMessageType('R'));
-    REQUIRE(!validMessageType('H'));
-    REQUIRE(!validMessageType('Y'));
-    REQUIRE(!validMessageType('L'));
-    REQUIRE(!validMessageType('V'));
-    REQUIRE(!validMessageType('W'));
-    REQUIRE(!validMessageType('K'));
-    REQUIRE(!validMessageType('J'));
-    REQUIRE(!validMessageType('h'));
-    REQUIRE(validMessageType('A'));
-    REQUIRE(validMessageType('F'));
-    REQUIRE(validMessageType('E'));
-    REQUIRE(validMessageType('C'));
-    REQUIRE(validMessageType('X'));
-    REQUIRE(validMessageType('D'));
-    REQUIRE(validMessageType('U'));
-    REQUIRE(!validMessageType('P'));
-    REQUIRE(!validMessageType('Q'));
-    REQUIRE(!validMessageType('B'));
-    REQUIRE(!validMessageType('I'));
-    REQUIRE(!validMessageType('O'));
+    REQUIRE(!ITCHParserUtil::validMessageType('S'));
+    REQUIRE(ITCHParserUtil::validMessageType('R'));
+    REQUIRE(!ITCHParserUtil::validMessageType('H'));
+    REQUIRE(!ITCHParserUtil::validMessageType('Y'));
+    REQUIRE(!ITCHParserUtil::validMessageType('L'));
+    REQUIRE(!ITCHParserUtil::validMessageType('V'));
+    REQUIRE(!ITCHParserUtil::validMessageType('W'));
+    REQUIRE(!ITCHParserUtil::validMessageType('K'));
+    REQUIRE(!ITCHParserUtil::validMessageType('J'));
+    REQUIRE(!ITCHParserUtil::validMessageType('h'));
+    REQUIRE(ITCHParserUtil::validMessageType('A'));
+    REQUIRE(ITCHParserUtil::validMessageType('F'));
+    REQUIRE(ITCHParserUtil::validMessageType('E'));
+    REQUIRE(ITCHParserUtil::validMessageType('C'));
+    REQUIRE(ITCHParserUtil::validMessageType('X'));
+    REQUIRE(ITCHParserUtil::validMessageType('D'));
+    REQUIRE(ITCHParserUtil::validMessageType('U'));
+    REQUIRE(!ITCHParserUtil::validMessageType('P'));
+    REQUIRE(!ITCHParserUtil::validMessageType('Q'));
+    REQUIRE(!ITCHParserUtil::validMessageType('B'));
+    REQUIRE(!ITCHParserUtil::validMessageType('I'));
+    REQUIRE(!ITCHParserUtil::validMessageType('O'));
 
-    REQUIRE(!validMessageType('r'));
-    REQUIRE(!validMessageType('Z'));
-    REQUIRE(!validMessageType('3'));
-    REQUIRE(!validMessageType('?'));
+    REQUIRE(!ITCHParserUtil::validMessageType('r'));
+    REQUIRE(!ITCHParserUtil::validMessageType('Z'));
+    REQUIRE(!ITCHParserUtil::validMessageType('3'));
+    REQUIRE(!ITCHParserUtil::validMessageType('?'));
 }

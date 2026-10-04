@@ -9,6 +9,7 @@
 // Constant Expressions
 inline constexpr SizeT CACHE_LINE_SIZE = 64;
 
+// SPSCQueue Template Class
 template <SizeT exponent>
 class SPSCQueue final {
 

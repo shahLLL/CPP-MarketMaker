@@ -1,302 +1,93 @@
 #include "../headers/itch-parser.hpp"
 
-[[nodiscard]] const Int8 getMessageType(Alpha messageType) {
+ITCHParser::ITCHParser(FilePath filePath) {
+    int fileDescriptor = ::open(filePath, O_RDONLY);
+    if (fileDescriptor == -1) { throw std::runtime_error("FAILED TO OPEN FILE"); }
+
+    struct stat st{};
+    if (::fstat(fileDescriptor, &st) == -1) {
+        ::close(fileDescriptor);
+        throw std::runtime_error("FSTAT FAILED");
+    }
+    fileSize = static_cast<SizeT>(st.st_size);
+
+    if (fileSize == 0) {
+        ::close(fileDescriptor);
+        return;
+    }
+
+    mappedData = ::mmap(nullptr, fileSize, PROT_READ, MAP_PRIVATE, fileDescriptor, 0);
+    if (mappedData == MAP_FAILED) {
+        ::close(fileDescriptor);
+        throw std::runtime_error("MMAP FAILED");
+    }
+
+    currentPtr = reinterpret_cast<Byte*>(mappedData) + ITCH_INCREMENT;
+    endPtr = currentPtr + fileSize;
+    increment();
+   
+    ::close(fileDescriptor);
+};
+
+[[nodiscard]] const Bool ITCHParser::hasNext() const noexcept { return currentPtr < endPtr; }
+
+void ITCHParser::parseNext(ByteContainer& byteContainer) const {
+    if(currentPtr >= endPtr) { throw std::runtime_error("PARSENEXT NOT POSSIBLE, FILE EMPTY"); }
+    Alpha messageType = static_cast<Alpha>(*currentPtr);
     switch(messageType) {
-        case 'S': return 12;
-        case 'R': return 39;
-        case 'H': return 25;
-        case 'Y': return 20;
-        case 'L': return 26;
-        case 'V': return 35;
-        case 'W': return 12;
-        case 'K': return 28;
-        case 'J': return 35;
-        case 'h': return 21;
-        case 'A': return 36;
-        case 'F': return 40;
-        case 'E': return 31;
-        case 'C': return 36;
-        case 'X': return 23;
-        case 'D': return 19;
-        case 'U': return 35;
-        case 'P': return 44;
-        case 'Q': return 40;
-        case 'B': return 19;
-        case 'I': return 50;
-        case 'O': return 48;
-        default: return NULL_MESSAGE_SIGNAL;
+        case 'S': ITCHParserUtil::parseSystemEventMessage(byteContainer, currentPtr); break;
+        case 'R': ITCHParserUtil::parseStockDirectory(byteContainer, currentPtr); break;
+        case 'H': ITCHParserUtil::parseStockTradingAction(byteContainer, currentPtr); break;
+        case 'Y': ITCHParserUtil::parseRegSHORestriction(byteContainer, currentPtr); break;
+        case 'L': ITCHParserUtil::parseMarketParticipantPosition(byteContainer, currentPtr); break;
+        case 'V': ITCHParserUtil::parseMWCBDeclineLevelMessage(byteContainer, currentPtr); break;
+        case 'W': ITCHParserUtil::parseMWCBStatusMessage(byteContainer, currentPtr); break;
+        case 'K': ITCHParserUtil::parseQuotingPeriodUpdate(byteContainer, currentPtr); break;
+        case 'J': ITCHParserUtil::parseLULDAuctionCollar(byteContainer, currentPtr); break;
+        case 'h': ITCHParserUtil::parseOperationalHalt(byteContainer, currentPtr); break;
+        case 'A': ITCHParserUtil::parseAddOrderMessage(byteContainer, currentPtr); break;
+        case 'F': ITCHParserUtil::parseAddOrderMPIDAttributionMessage(byteContainer, currentPtr); break;
+        case 'E': ITCHParserUtil::parseOrderExecutedMessage(byteContainer, currentPtr); break;
+        case 'C': ITCHParserUtil::parseOrderExecutedWithPriceMessage(byteContainer, currentPtr); break;
+        case 'X': ITCHParserUtil::parseOrderCancelMessage(byteContainer, currentPtr); break;
+        case 'D': ITCHParserUtil::parseOrderDeleteMessage(byteContainer, currentPtr); break;
+        case 'U': ITCHParserUtil::parseOrderReplaceMessage(byteContainer, currentPtr); break;
+        case 'P': ITCHParserUtil::parseTradeMessage(byteContainer, currentPtr); break;
+        case 'Q': ITCHParserUtil::parseCrossTradeMessage(byteContainer, currentPtr); break;
+        case 'B': ITCHParserUtil::parseBrokenTradeMessage(byteContainer, currentPtr); break;
+        case 'I': ITCHParserUtil::parseNOIIMessage(byteContainer, currentPtr); break;
+        case 'O': ITCHParserUtil::parseDLWCRPD(byteContainer, currentPtr); break;
+        default: throw std::runtime_error("PARSENEXT NOT POSSIBLE, UNKNOWN MESSAGE TYPE");
     }
 }
 
-[[nodiscard]] const Bool validMessageType(Alpha messageType) {
-    switch(messageType) {
-        case 'S': return false;
-        case 'R': return true;
-        case 'H': return false;
-        case 'Y': return false;
-        case 'L': return false;
-        case 'V': return false;
-        case 'W': return false;
-        case 'K': return false;
-        case 'J': return false;
-        case 'h': return false;
-        case 'A': return true;
-        case 'F': return true;
-        case 'E': return true;
-        case 'C': return true;
-        case 'X': return true;
-        case 'D': return true;
-        case 'U': return true;
-        case 'P': return false;
-        case 'Q': return false;
-        case 'B': return false;
-        case 'I': return false;
-        case 'O': return false;
-        default: return false;
+void ITCHParser::increment() {
+    Bool incrementOnce = false;
+    while(currentPtr < endPtr) {
+        Alpha messageChar = static_cast<Alpha>(*currentPtr);
+        if((ITCHParserUtil::validMessageType(messageChar)) && incrementOnce) break;
+        const Int8 messageCode = ITCHParserUtil::getMessageType(messageChar);
+        if(messageCode == ITCHParserUtil::NULL_MESSAGE_SIGNAL) { throw std::runtime_error("ERROR PARSING FILE"); }
+        currentPtr = currentPtr + messageCode + ITCH_INCREMENT;
+        incrementOnce = true;
     }
 }
 
-void endianSwap(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept {
-    SizeT end = tail;
-    while(head <= end) {
-        byteContainer[head] = *(bytePtr + tail);
-        head = head + 1;
-        tail = tail - 1;
+ITCHParser::~ITCHParser() { ::munmap(mappedData, fileSize); }        
+
+ITCHParser::ITCHParser(ITCHParser&& other) noexcept
+    : mappedData(std::exchange(other.mappedData, nullptr)),
+    fileSize(std::exchange(other.fileSize, 0)),
+    currentPtr(std::exchange(other.currentPtr, nullptr)),
+    endPtr(std::exchange(other.endPtr, nullptr)) {}
+
+ITCHParser& ITCHParser::operator=(ITCHParser&& other) noexcept {
+    if (this != &other) {
+        this->~ITCHParser();
+        mappedData = std::exchange(other.mappedData, nullptr);
+        fileSize = std::exchange(other.fileSize, 0);
+        currentPtr = std::exchange(other.currentPtr, nullptr);
+        endPtr = std::exchange(other.endPtr, nullptr);
     }
-}
-
-void directCopy(ByteContainer& byteContainer, Byte* bytePtr, SizeT head, SizeT tail) noexcept {
-    for(int i = head; i <= tail; i++) { byteContainer[i] = *(bytePtr + i); }
-}
-
-void parseSystemEventMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    byteContainer[11] = *(bytePtr + 11);
-}
-
-void parseStockDirectory(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 20);
-    endianSwap(byteContainer, bytePtr, 21, 24);
-    directCopy(byteContainer, bytePtr, 25, 33);
-    endianSwap(byteContainer, bytePtr, 34, 37);
-    byteContainer[38] = *(bytePtr + 38);
-}
-
-void parseStockTradingAction(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 24);
-}
-
-void parseRegSHORestriction(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 19);
-}
-
-void parseMarketParticipantPosition(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 25);
-
-}
-
-void parseMWCBDeclineLevelMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 26);
-    endianSwap(byteContainer, bytePtr, 27, 34);
-}
-
-void parseMWCBStatusMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    byteContainer[11] = *(bytePtr + 11);
-}
-
-void parseQuotingPeriodUpdate(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 22);
-    byteContainer[23] = *(bytePtr + 23);
-    endianSwap(byteContainer, bytePtr, 24, 27);   
-}
-
-void parseLULDAuctionCollar(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 22);
-    endianSwap(byteContainer, bytePtr, 23, 26);
-    endianSwap(byteContainer, bytePtr, 27, 30);
-    endianSwap(byteContainer, bytePtr, 31, 34);
-}
-
-void parseOperationalHalt(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 20);
-}
-
-void parseAddOrderMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    byteContainer[19] = *(bytePtr + 19);
-    endianSwap(byteContainer, bytePtr, 20, 23);
-    directCopy(byteContainer, bytePtr, 24, 31);
-    endianSwap(byteContainer, bytePtr, 32, 35);
-}
-
-void parseAddOrderMPIDAttributionMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    byteContainer[19] = *(bytePtr + 19);
-    endianSwap(byteContainer, bytePtr, 20, 23);
-    directCopy(byteContainer, bytePtr, 24, 31);
-    endianSwap(byteContainer, bytePtr, 32, 35);
-    directCopy(byteContainer, bytePtr, 36, 39);    
-}
-
-void parseOrderExecutedMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 22);
-    endianSwap(byteContainer, bytePtr, 23, 30);
-}
-
-void parseOrderExecutedWithPriceMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 22);
-    endianSwap(byteContainer, bytePtr, 23, 30);
-    byteContainer[31] = *(bytePtr + 31);
-    endianSwap(byteContainer, bytePtr, 32, 35);
-}
-
-void parseOrderCancelMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 22);
-}
-
-void parseOrderDeleteMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-}
-
-void parseOrderReplaceMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 26);
-    endianSwap(byteContainer, bytePtr, 27, 30);
-    endianSwap(byteContainer, bytePtr, 31, 34);
-}
-
-void parseTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    byteContainer[19] = *(bytePtr + 19);
-    endianSwap(byteContainer, bytePtr, 20, 23);
-    directCopy(byteContainer, bytePtr, 24, 31);
-    endianSwap(byteContainer, bytePtr, 32, 35);
-    endianSwap(byteContainer, bytePtr, 36, 43);
-}
-
-void parseCrossTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    directCopy(byteContainer, bytePtr, 19, 26);
-    endianSwap(byteContainer, bytePtr, 27, 30);
-    endianSwap(byteContainer, bytePtr, 31, 38);
-    byteContainer[39] = *(bytePtr + 39);
-}
-
-void parseBrokenTradeMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-}
-
-void parseNOIIMessage(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    endianSwap(byteContainer, bytePtr, 11, 18);
-    endianSwap(byteContainer, bytePtr, 19, 26);
-    byteContainer[27] = *(bytePtr + 27);
-    directCopy(byteContainer, bytePtr, 28, 35);
-    endianSwap(byteContainer, bytePtr, 36, 39);
-    endianSwap(byteContainer, bytePtr, 40, 43);
-    endianSwap(byteContainer, bytePtr, 44, 47);
-    byteContainer[48] = *(bytePtr + 48);
-    byteContainer[49] = *(bytePtr + 49);
-}
-
-void parseDLWCRPD(ByteContainer& byteContainer, Byte* bytePtr) noexcept {
-    byteContainer[0] = *bytePtr;
-    endianSwap(byteContainer, bytePtr, 1, 2);
-    endianSwap(byteContainer, bytePtr, 3, 4);
-    endianSwap(byteContainer, bytePtr, 5, 10);
-    directCopy(byteContainer, bytePtr, 11, 19);
-    endianSwap(byteContainer, bytePtr, 20, 23);
-    endianSwap(byteContainer, bytePtr, 24, 27);
-    endianSwap(byteContainer, bytePtr, 28, 31);
-    endianSwap(byteContainer, bytePtr, 32, 39);
-    endianSwap(byteContainer, bytePtr, 40, 43);
-    endianSwap(byteContainer, bytePtr, 44, 47);
+    return *this;
 }
