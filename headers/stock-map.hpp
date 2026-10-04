@@ -3,7 +3,6 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-
 #include "types.hpp"
 #include "order-book.hpp"
 
@@ -21,7 +20,11 @@ struct SymbolData final {
 };
 
 class StockMap final {
+
+    // StockContainer Struct
     struct StockContainer final { Alpha symbol[SYMBOL_SIZE + 1]; OrderBook orderBook; };
+
+    // Member Variables
     std::unordered_map<UInt16, StockContainer> stockMap;
 
     // Helper Functions
@@ -34,8 +37,11 @@ class StockMap final {
     }
     
     public:
+        // Constructor & Destructor
         StockMap() = default;
         ~StockMap() = default;
+
+        // Methods
         const Bool containsStock(const UInt16 stockLocate) noexcept;
         void addStock(const UInt16 stockLocate, const Byte* stockSymbol) noexcept;
         const Bool addOrder(const UInt16 stockLocate, const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;
@@ -43,5 +49,5 @@ class StockMap final {
         const Bool deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept;
         const Bool replaceOrder(const UInt16 stockLocate, const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
         const std::vector<SymbolData> getPerSymbolData() const noexcept;
-        void processEntry(ByteContainer& byteContainer);
+        const Bool processEntry(ByteContainer& byteContainer);
 };

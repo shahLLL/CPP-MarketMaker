@@ -56,12 +56,12 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
     return perSymbolData;
 };
 
-void StockMap::processEntry(ByteContainer& byteContainer) {
+const Bool StockMap::processEntry(ByteContainer& byteContainer) {
     Alpha messageType = extractAlpha(byteContainer[0]);
     switch (messageType) {
         case 'R': {
             addStock(convertBytes<UInt16>(byteContainer.data() + 1), (byteContainer.data() + 11));
-            break;
+            return true;
         }
 
         case 'A':
@@ -73,7 +73,7 @@ void StockMap::processEntry(ByteContainer& byteContainer) {
                 convertBytes<UInt32>(byteContainer.data() + 20),
                 convertBytes<UInt32>(byteContainer.data() + 32)
             );
-            break;
+            return true;
         }
 
         case 'E':
@@ -84,7 +84,7 @@ void StockMap::processEntry(ByteContainer& byteContainer) {
                 convertBytes<UInt64>(byteContainer.data() + 11),
                 convertBytes<UInt32>(byteContainer.data() + 19)
             );
-            break;
+            return true;
         }
 
         case 'D': {
@@ -92,7 +92,7 @@ void StockMap::processEntry(ByteContainer& byteContainer) {
                 convertBytes<UInt16>(byteContainer.data() + 1),
                 convertBytes<UInt64>(byteContainer.data() + 11)
             );
-            break;
+            return true;
         }
 
         case 'U': {
@@ -103,8 +103,8 @@ void StockMap::processEntry(ByteContainer& byteContainer) {
                 convertBytes<UInt32>(byteContainer.data() + 27),
                 convertBytes<UInt32>(byteContainer.data() + 31)
             );
-            break;
+            return true;
         }
-        default: throw std::runtime_error("UNKNOWN MESSAGE TYPE");
+        default: return false;
     }
 };
