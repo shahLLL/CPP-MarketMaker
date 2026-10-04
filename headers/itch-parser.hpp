@@ -22,7 +22,7 @@ class ITCHParser final {
     Byte* endPtr = nullptr;
 
     public:
-        // Explicit Constructor & Destructor
+        // Constructor & Destructor
         ITCHParser(FilePath filePath);
          ~ITCHParser();
 
