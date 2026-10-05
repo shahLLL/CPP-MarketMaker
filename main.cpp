@@ -16,7 +16,6 @@ void displayResults(StockMap& stockMap) noexcept {
         std::cout << "BEST ASK: " << stockSymbol.bestAsk << std::endl;
         std::cout << "NUMBER OF BID ORDERS: " << stockSymbol.numberOfBidOrders << std::endl;
         std::cout << "NUMBER OF ASK ORDERS: " << stockSymbol.numberOfAskOrders << std::endl;
-        std::cout << "BEST BID: " << stockSymbol.bestBid << std::endl;
         std::cout << "MIDPRICE: " << stockSymbol.midPrice << std::endl;
         std::cout << "----------------------------" << std::endl;
     }
