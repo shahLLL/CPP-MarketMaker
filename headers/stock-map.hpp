@@ -54,5 +54,5 @@ class StockMap final {
         const Bool deleteOrder(const UInt16 stockLocate, const UInt64 id) noexcept;
         const Bool replaceOrder(const UInt16 stockLocate, const UInt64 prevId, const UInt64 newId, const UInt32 quantity, const UInt32 price) noexcept;
         const std::vector<SymbolData> getPerSymbolData() const noexcept;
-        const Bool processEntry(ByteContainer& byteContainer);
+        const Bool processEntry(ByteContainer& byteContainer, Bool* isOrderBookMessage = nullptr);
 };

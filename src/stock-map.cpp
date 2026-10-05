@@ -61,16 +61,18 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
     return perSymbolData;
 };
 
-const Bool StockMap::processEntry(ByteContainer& byteContainer) {
+const Bool StockMap::processEntry(ByteContainer& byteContainer, Bool* isOrderBookMessage) {
     Alpha messageType = extractAlpha(byteContainer[0]);
     switch (messageType) {
         case 'R': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
             addStock(convertBytes<UInt16>(byteContainer.data() + 1), (byteContainer.data() + 11));
             return true;
         }
 
         case 'A':
         case 'F': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
             addOrder(
                 convertBytes<UInt16>(byteContainer.data() + 1), 
                 convertBytes<UInt64>(byteContainer.data() + 11),
@@ -84,6 +86,7 @@ const Bool StockMap::processEntry(ByteContainer& byteContainer) {
         case 'E':
         case 'C':
         case 'X': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
             cancelOrExecuteOrder(
                 convertBytes<UInt16>(byteContainer.data() + 1),
                 convertBytes<UInt64>(byteContainer.data() + 11),
@@ -93,6 +96,7 @@ const Bool StockMap::processEntry(ByteContainer& byteContainer) {
         }
 
         case 'D': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
             deleteOrder(
                 convertBytes<UInt16>(byteContainer.data() + 1),
                 convertBytes<UInt64>(byteContainer.data() + 11)
@@ -101,6 +105,7 @@ const Bool StockMap::processEntry(ByteContainer& byteContainer) {
         }
 
         case 'U': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
             replaceOrder(
                 convertBytes<UInt16>(byteContainer.data() + 1),
                 convertBytes<UInt64>(byteContainer.data() + 11),
