@@ -183,7 +183,7 @@ TEST_CASE("ORDERBOOK TESTCASE #8", "[getNumberOfBidOrders]") {
     REQUIRE(orderBook.getNumberOfBidOrders() == 1);
 }
 
-TEST_CASE("ORDERBOOK TESTCASE #8", "[getNumberOfAskOrders]") {
+TEST_CASE("ORDERBOOK TESTCASE #9", "[getNumberOfAskOrders]") {
     OrderBook orderBook = OrderBook();
     REQUIRE(orderBook.getNumberOfAskOrders() == 0);
 
