@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cstddef>
 #include <array>
+#include <vector>
+#include <chrono>
 
 constexpr std::size_t BYTE_CONTAINER_SIZE = 50;
 
@@ -20,6 +22,9 @@ using Byte = std::byte;
 using ByteContainer = std::array<Byte, BYTE_CONTAINER_SIZE>;
 using VoidPtr = void*;
 using FilePath = const char*;
+using TimePoint = std::chrono::high_resolution_clock::time_point;
+using LatencyVector = std::vector<long long>;
+using TimePointVector = std::vector<TimePoint>;
 
 // Enums
 enum class Side : Bool { BUY, SELL };
