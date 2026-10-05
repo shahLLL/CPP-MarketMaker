@@ -93,17 +93,18 @@ const Double OrderBook::getMidPrice() const noexcept {
 const Double OrderBook::getMicroPrice() const noexcept {
     if((bestBidCursor == NULL_CURSOR) || (bestAskCursor == NULL_CURSOR)) return 0.0;
     
-    Double bestBidDouble = static_cast<Double>(bestBidCursor + TICK_MIN);
-    Double bestAskDouble = static_cast<Double>(bestAskCursor + TICK_MIN);
-    Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
-    Double askQuantity = static_cast<Double>(getTotalAskQuantity());
+    const Double bestBidDouble = static_cast<Double>(bestBidCursor + TICK_MIN);
+    const Double bestAskDouble = static_cast<Double>(bestAskCursor + TICK_MIN);
+    const Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
+    const Double askQuantity = static_cast<Double>(getTotalAskQuantity());
+    const Double total = bidQuantity + askQuantity;
 
-    return (bestBidDouble + ((bestAskDouble - bestBidDouble) * bidQuantity)) / (bidQuantity + askQuantity);
+    return bestBidDouble + (bestAskDouble - bestBidDouble) * (bidQuantity / total);
 }
 
 const Double OrderBook::getImbalance() const noexcept {
-    Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
-    Double askQuantity = static_cast<Double>(getTotalAskQuantity());
+    const Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
+    const Double askQuantity = static_cast<Double>(getTotalAskQuantity());
     
     if((bidQuantity + askQuantity) == 0.0) { return 0.0; }
     return (bidQuantity - askQuantity) / (bidQuantity + askQuantity);

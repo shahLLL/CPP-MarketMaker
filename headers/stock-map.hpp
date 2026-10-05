@@ -14,6 +14,7 @@ inline constexpr Alpha NULL_ALPHA = '\0';
 struct SymbolData final {
     const Alpha symbol[SYMBOL_SIZE + 1];
     const Double midPrice;
+    const Double microPrice;
     const Double imbalance;
     const Int32 bestBid;
     const Int32 bestAsk;

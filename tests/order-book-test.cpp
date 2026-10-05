@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include "../headers/order-book.hpp"
 
 TEST_CASE("ORDERBOOK TESTCASE #1", "[addOrder]") {
@@ -219,12 +220,13 @@ TEST_CASE("ORDERBOOK TESTCASE #10", "[getImbalance]") {
 
 TEST_CASE("ORDERBOOK TESTCASE #11", "[getMicroPrice]") {
     OrderBook orderBook = OrderBook();
-    REQUIRE(orderBook.getMicroPrice() == 0.0);
+    Double expectedMicroPrice = 50900.0 + (52900.0 - 50900.0) * (36.0 / 46.0);
 
+    REQUIRE(orderBook.getMicroPrice() == 0.0);
     REQUIRE(orderBook.addOrder(1, Side::BUY, 12, 50'900));
     REQUIRE(orderBook.getMicroPrice() == 0.0);
     REQUIRE(orderBook.addOrder(2, Side::BUY, 24, 50'900));
     REQUIRE(orderBook.getMicroPrice() == 0.0);
     REQUIRE(orderBook.addOrder(3, Side::SELL, 10, 52'900));
-    REQUIRE(orderBook.getImbalance() == (12.0 + 24.0 - 10.0)/(12.0 + 24.0 + 10.0));
+    REQUIRE_THAT(orderBook.getMicroPrice(), Catch::Matchers::WithinAbs(expectedMicroPrice, 0.0001));
 }

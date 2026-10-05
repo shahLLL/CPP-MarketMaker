@@ -46,6 +46,7 @@ const std::vector<SymbolData> StockMap::getPerSymbolData() const noexcept {
                     NULL_ALPHA
                 },
                 stockContainer.orderBook.getMidPrice(),
+                stockContainer.orderBook.getMicroPrice(),
                 stockContainer.orderBook.getImbalance(),
                 stockContainer.orderBook.getBestBid(),
                 stockContainer.orderBook.getBestAsk(),
