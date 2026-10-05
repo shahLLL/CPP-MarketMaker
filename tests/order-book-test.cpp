@@ -216,3 +216,15 @@ TEST_CASE("ORDERBOOK TESTCASE #10", "[getImbalance]") {
     REQUIRE(orderBook.addOrder(3, Side::SELL, 10, 52'900));
     REQUIRE(orderBook.getImbalance() == (12.0 + 24.0 - 10.0)/(12.0 + 24.0 + 10.0));
 }
+
+TEST_CASE("ORDERBOOK TESTCASE #11", "[getMicroPrice]") {
+    OrderBook orderBook = OrderBook();
+    REQUIRE(orderBook.getMicroPrice() == 0.0);
+
+    REQUIRE(orderBook.addOrder(1, Side::BUY, 12, 50'900));
+    REQUIRE(orderBook.getMicroPrice() == 0.0);
+    REQUIRE(orderBook.addOrder(2, Side::BUY, 24, 50'900));
+    REQUIRE(orderBook.getMicroPrice() == 0.0);
+    REQUIRE(orderBook.addOrder(3, Side::SELL, 10, 52'900));
+    REQUIRE(orderBook.getImbalance() == (12.0 + 24.0 - 10.0)/(12.0 + 24.0 + 10.0));
+}

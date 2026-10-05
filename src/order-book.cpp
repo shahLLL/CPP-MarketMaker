@@ -90,6 +90,17 @@ const Double OrderBook::getMidPrice() const noexcept {
     return (static_cast<Double>(bestBidCursor + TICK_MIN) + static_cast<Double>(bestAskCursor + TICK_MIN)) / 2.0;
 }
 
+const Double OrderBook::getMicroPrice() const noexcept {
+    if((bestBidCursor == NULL_CURSOR) || (bestAskCursor == NULL_CURSOR)) return 0.0;
+    
+    Double bestBidDouble = static_cast<Double>(bestBidCursor + TICK_MIN);
+    Double bestAskDouble = static_cast<Double>(bestAskCursor + TICK_MIN);
+    Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
+    Double askQuantity = static_cast<Double>(getTotalAskQuantity());
+
+    return (bestBidDouble + ((bestAskDouble - bestBidDouble) * bidQuantity)) / (bidQuantity + askQuantity);
+}
+
 const Double OrderBook::getImbalance() const noexcept {
     Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
     Double askQuantity = static_cast<Double>(getTotalAskQuantity());

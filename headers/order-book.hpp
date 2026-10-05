@@ -51,6 +51,7 @@ class OrderBook final {
         const UInt16 getNumberOfBidOrders() const noexcept;
         const UInt16 getNumberOfAskOrders() const noexcept;
         const Double getMidPrice() const noexcept;
+        const Double getMicroPrice() const noexcept;
         const Double getImbalance() const noexcept;
         
 
