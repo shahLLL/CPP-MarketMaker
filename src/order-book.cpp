@@ -43,6 +43,28 @@ void OrderBook::addToBitmap(const Int32 inputCursor) noexcept { bitmap[inputCurs
 
 Bool OrderBook::checkBitmap(const Int32 inputCursor) noexcept{ return ((bitmap[inputCursor >> 6] & (1ULL << (inputCursor & 63))) != 0); }
 
+UInt64 OrderBook::getTotalBidQuantity() const noexcept {
+    UInt64 total = 0;
+    Int32 cursor = bestBidCursor;
+
+    while(cursor != NULL_CURSOR) {
+        total = total + priceLadder[cursor];
+        cursor = cursorSeekDown(cursor);
+    }
+    return total;
+}
+
+UInt64 OrderBook::getTotalAskQuantity() const noexcept {
+    UInt64 total = 0;
+    Int32 cursor = bestAskCursor;
+
+    while(cursor != NULL_CURSOR) {
+        total = total + priceLadder[cursor];
+        cursor = cursorSeekUp(cursor);
+    }
+    return total;
+}
+
 const UInt64 OrderBook::getQuantity(const UInt32 price) { 
     if(checkBitmap(price - TICK_MIN)) { return priceLadder[price - TICK_MIN]; }
     return 0;
@@ -57,7 +79,10 @@ const Int32 OrderBook::getBestAsk() const noexcept {
     if(bestAskCursor == NULL_CURSOR) { return NULL_CURSOR; }
     return (bestAskCursor + TICK_MIN); 
 }
-        
+
+const UInt16 OrderBook::getNumberOfBidOrders() const noexcept { return numberofBidOrders; }
+const UInt16 OrderBook::getNumberOfAskOrders() const noexcept { return numberofAskOrders; }
+
 const Double OrderBook::getMidPrice() const noexcept {
     if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return static_cast<Double>(NULL_CURSOR);
     if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return static_cast<Double>(bestAskCursor + TICK_MIN);
@@ -65,8 +90,13 @@ const Double OrderBook::getMidPrice() const noexcept {
     return (static_cast<Double>(bestBidCursor + TICK_MIN) + static_cast<Double>(bestAskCursor + TICK_MIN)) / 2.0;
 }
 
-const UInt16 OrderBook::getNumberOfBidOrders() const noexcept { return numberofBidOrders; }
-const UInt16 OrderBook::getNumberOfAskOrders() const noexcept { return numberofAskOrders; }
+const Double OrderBook::getImbalance() const noexcept {
+    Double bidQuantity = static_cast<Double>(getTotalBidQuantity());
+    Double askQuantity = static_cast<Double>(getTotalAskQuantity());
+    
+    if((bidQuantity + askQuantity) == 0.0) { return 0.0; }
+    return (bidQuantity - askQuantity) / (bidQuantity + askQuantity);
+}
 
 const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept {
     if((price < TICK_MIN) || (price >= TICK_MAX)) return false;

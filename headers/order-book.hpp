@@ -35,7 +35,9 @@ class OrderBook final {
     Int32 cursorSeekDown(const Int32 inputCursor) const noexcept;
     void removeFromBitmap(const Int32 inputCursor) noexcept;
     void addToBitmap(const Int32 inputCursor) noexcept;
-    bool checkBitmap(const Int32 inputCursor) noexcept;
+    Bool checkBitmap(const Int32 inputCursor) noexcept;
+    UInt64 getTotalBidQuantity() const noexcept;
+    UInt64 getTotalAskQuantity() const noexcept;
 
     public:
         // Constructor & Destructor
@@ -46,9 +48,11 @@ class OrderBook final {
         const UInt64 getQuantity(const UInt32 price);
         const Int32 getBestBid() const noexcept;
         const Int32 getBestAsk() const noexcept;
-        const Double getMidPrice() const noexcept;
         const UInt16 getNumberOfBidOrders() const noexcept;
         const UInt16 getNumberOfAskOrders() const noexcept;
+        const Double getMidPrice() const noexcept;
+        const Double getImbalance() const noexcept;
+        
 
         // Book Modifyers
         const Bool addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;

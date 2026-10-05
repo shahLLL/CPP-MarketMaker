@@ -204,3 +204,15 @@ TEST_CASE("ORDERBOOK TESTCASE #9", "[getNumberOfAskOrders]") {
     REQUIRE(orderBook.deleteOrder(3));
     REQUIRE(orderBook.getNumberOfAskOrders() == 1);
 }
+
+TEST_CASE("ORDERBOOK TESTCASE #10", "[getImbalance]") {
+    OrderBook orderBook = OrderBook();
+    REQUIRE(orderBook.getImbalance() == 0.0);
+
+    REQUIRE(orderBook.addOrder(1, Side::BUY, 12, 50'900));
+    REQUIRE(orderBook.getImbalance() == 1.0);
+    REQUIRE(orderBook.addOrder(2, Side::BUY, 24, 50'900));
+    REQUIRE(orderBook.getImbalance() == 1.0);
+    REQUIRE(orderBook.addOrder(3, Side::SELL, 10, 52'900));
+    REQUIRE(orderBook.getImbalance() == (12.0 + 24.0 - 10.0)/(12.0 + 24.0 + 10.0));
+}
