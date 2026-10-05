@@ -13,11 +13,12 @@ inline constexpr Alpha NULL_ALPHA = '\0';
 // Symbol Data Struct
 struct SymbolData final {
     const Alpha symbol[SYMBOL_SIZE + 1];
+    const Double midPrice;
+    const Double imbalance;
     const Int32 bestBid;
     const Int32 bestAsk;
     const UInt16 numberOfBidOrders;
     const UInt16 numberOfAskOrders;
-    const Double midPrice;
     const UInt16 stockLocate;
 };
 
