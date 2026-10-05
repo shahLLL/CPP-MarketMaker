@@ -36,7 +36,7 @@ class SPSCQueue final {
         ~SPSCQueue() = default;
 
         // Methods
-        const Bool enqueue(ITCHParser& itchParser, TimePoint* timePoint = nullptr) {
+        const Bool enqueue(ITCHParser& itchParser, TimePoint* timePoint = nullptr, Bool* isOrderBookMessage = nullptr) {
             SizeT pushCursorSpot = pushCursor.load(std::memory_order_relaxed);
             SizeT incrementOne = (pushCursorSpot + 1) & (mask);
 
@@ -47,12 +47,12 @@ class SPSCQueue final {
             }
             
             if(timePoint != nullptr) { *timePoint = std::chrono::high_resolution_clock::now(); } // Used for benchmarking
-            itchParser.parseNext(buf[pushCursorSpot]);
+            itchParser.parseNext(buf[pushCursorSpot], isOrderBookMessage);
             pushCursor.store(incrementOne, std::memory_order_release);
             return true;
         }
 
-        const Bool dequeue(StockMap& stockMap, TimePoint* timePoint = nullptr) {
+        const Bool dequeue(StockMap& stockMap, TimePoint* timePoint = nullptr, Bool* isOrderBookMessage = nullptr) {
             SizeT popCursorSpot = popCursor.load(std::memory_order_relaxed);
 
             if(cachedPushCursor == popCursorSpot) { 
@@ -61,7 +61,7 @@ class SPSCQueue final {
                 if(cachedPushCursor == popCursorSpot) return false;
             }
  
-            stockMap.processEntry(buf[popCursorSpot]);
+            stockMap.processEntry(buf[popCursorSpot], isOrderBookMessage);
             if(timePoint != nullptr) { *timePoint = std::chrono::high_resolution_clock::now(); } // Used for benchmarking
             popCursor.store((popCursorSpot + 1) & (mask), std::memory_order_release);
             return true;
