@@ -15,6 +15,8 @@ struct SymbolData final {
     const Alpha symbol[SYMBOL_SIZE + 1];
     const Int32 bestBid;
     const Int32 bestAsk;
+    const UInt16 numberOfBidOrders;
+    const UInt16 numberOfAskOrders;
     const Int32 midPrice;
     const UInt16 stockLocate;
 };
