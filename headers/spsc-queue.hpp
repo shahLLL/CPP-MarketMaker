@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <atomic>
 #include <new>
+#include <chrono>
 #include "types.hpp"
 #include "itch-parser.hpp"
 #include "stock-map.hpp"
@@ -35,7 +36,7 @@ class SPSCQueue final {
         ~SPSCQueue() = default;
 
         // Methods
-        const Bool enqueue(ITCHParser& itchParser) {
+        const Bool enqueue(ITCHParser& itchParser, TimePoint* timePoint = nullptr) {
             SizeT pushCursorSpot = pushCursor.load(std::memory_order_relaxed);
             SizeT incrementOne = (pushCursorSpot + 1) & (mask);
 
@@ -44,13 +45,14 @@ class SPSCQueue final {
             // Full
             if(cachedPopCursor == incrementOne) return false;
             }
-
+            
+            if(timePoint != nullptr) { *timePoint = std::chrono::high_resolution_clock::now(); } // Used for benchmarking
             itchParser.parseNext(buf[pushCursorSpot]);
             pushCursor.store(incrementOne, std::memory_order_release);
             return true;
         }
 
-        const Bool dequeue(StockMap& stockMap) {
+        const Bool dequeue(StockMap& stockMap, TimePoint* timePoint = nullptr) {
             SizeT popCursorSpot = popCursor.load(std::memory_order_relaxed);
 
             if(cachedPushCursor == popCursorSpot) { 
@@ -60,6 +62,7 @@ class SPSCQueue final {
             }
  
             stockMap.processEntry(buf[popCursorSpot]);
+            if(timePoint != nullptr) { *timePoint = std::chrono::high_resolution_clock::now(); } // Used for benchmarking
             popCursor.store((popCursorSpot + 1) & (mask), std::memory_order_release);
             return true;
         }
