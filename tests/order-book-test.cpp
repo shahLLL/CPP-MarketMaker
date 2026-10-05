@@ -160,3 +160,47 @@ TEST_CASE("ORDERBOOK TESTCASE #7", "[getMidPrice]") {
     REQUIRE(orderBook.addOrder(3, Side::SELL, 4, price1));
     REQUIRE(orderBook.getMidPrice() == (price1 + price2)/2);
 }
+
+TEST_CASE("ORDERBOOK TESTCASE #8", "[getNumberOfBidOrders]") {
+    OrderBook orderBook = OrderBook();
+    REQUIRE(orderBook.getNumberOfBidOrders() == 0);
+
+    REQUIRE(orderBook.addOrder(1, Side::BUY, 14, 60'012));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 1);
+    REQUIRE(orderBook.addOrder(2, Side::BUY, 16, 60'015));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 2);
+    REQUIRE(orderBook.addOrder(3, Side::BUY, 16, 60'015));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 3);
+
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 4));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 3);
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 10));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 2);
+
+    REQUIRE(orderBook.replaceOrder(2, 4, 6, 60'018));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 2);
+    REQUIRE(orderBook.deleteOrder(3));
+    REQUIRE(orderBook.getNumberOfBidOrders() == 1);
+}
+
+TEST_CASE("ORDERBOOK TESTCASE #8", "[getNumberOfAskOrders]") {
+    OrderBook orderBook = OrderBook();
+    REQUIRE(orderBook.getNumberOfAskOrders() == 0);
+
+    REQUIRE(orderBook.addOrder(1, Side::SELL, 14, 60'012));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 1);
+    REQUIRE(orderBook.addOrder(2, Side::SELL, 16, 60'015));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 2);
+    REQUIRE(orderBook.addOrder(3, Side::SELL, 16, 60'015));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 3);
+
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 4));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 3);
+    REQUIRE(orderBook.cancelOrExecuteOrder(1, 10));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 2);
+
+    REQUIRE(orderBook.replaceOrder(2, 4, 6, 60'018));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 2);
+    REQUIRE(orderBook.deleteOrder(3));
+    REQUIRE(orderBook.getNumberOfAskOrders() == 1);
+}

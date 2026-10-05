@@ -25,6 +25,8 @@ class OrderBook final {
     std::array<UInt64, PRICE_LADDER_CAPACITY> priceLadder;
     Int32 bestBidCursor = NULL_CURSOR;
     Int32 bestAskCursor = NULL_CURSOR;
+    UInt16 numberofBidOrders = 0;
+    UInt16 numberofAskOrders = 0;
     UInt64 bitmap[BITMAP_CAPACITY]{};
     std::unordered_map<UInt64, OrderData> map;
 
@@ -45,6 +47,8 @@ class OrderBook final {
         const Int32 getBestBid() const noexcept;
         const Int32 getBestAsk() const noexcept;
         const Int32 getMidPrice() const noexcept;
+        const UInt16 getNumberOfBidOrders() const noexcept;
+        const UInt16 getNumberOfAskOrders() const noexcept;
 
         // Book Modifyers
         const Bool addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept;

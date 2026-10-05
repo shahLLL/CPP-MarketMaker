@@ -65,9 +65,13 @@ const Int32 OrderBook::getMidPrice() const noexcept {
     return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;
 }
 
+const UInt16 OrderBook::getNumberOfBidOrders() const noexcept { return numberofBidOrders; }
+const UInt16 OrderBook::getNumberOfAskOrders() const noexcept { return numberofAskOrders; }
+
 const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 quantity, const UInt32 price) noexcept {
     if((price < TICK_MIN) || (price >= TICK_MAX)) return false;
     Int32 cursor = price - TICK_MIN;
+
     if((side == Side::BUY) && ((bestBidCursor == NULL_CURSOR) || (cursor > bestBidCursor))) { bestBidCursor = cursor; }
     if((side == Side::SELL) && ((bestAskCursor == NULL_CURSOR) || (cursor < bestAskCursor))) { bestAskCursor = cursor; }
     if(!checkBitmap(cursor)) {
@@ -76,6 +80,9 @@ const Bool OrderBook::addOrder(const UInt64 id, const Side side, const UInt32 qu
     } else {
         priceLadder[cursor] = priceLadder[cursor] + quantity;
     }
+    if(side == Side::BUY) { numberofBidOrders = numberofBidOrders + 1; }
+    else { numberofAskOrders = numberofAskOrders + 1; }
+
     map[id] = OrderData{ price, quantity, side };
     return true;
 }
@@ -90,7 +97,12 @@ const Bool OrderBook::cancelOrExecuteOrder(const UInt64 id, const UInt32 quantit
     orderData.quantity = orderData.quantity - quantity;
     priceLadder[cursor] = priceLadder[cursor] - quantity;
 
-    if(orderData.quantity == 0) { map.erase(id); }
+    if(orderData.quantity == 0) { 
+        map.erase(id);
+        if(side == Side::BUY) { numberofBidOrders = numberofBidOrders - 1; }
+        else { numberofAskOrders = numberofAskOrders - 1; }
+    }
+
     if(priceLadder[cursor] == 0) {
         removeFromBitmap(cursor);
         if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
@@ -106,8 +118,11 @@ const Bool OrderBook::deleteOrder(const UInt64 id) noexcept {
     Int32 cursor = orderData.price - TICK_MIN;
     Side side = orderData.side;
 
-    priceLadder[cursor] = priceLadder[cursor] - orderData.quantity;    
+    priceLadder[cursor] = priceLadder[cursor] - orderData.quantity;
     map.erase(id);
+
+    if(side == Side::BUY) { numberofBidOrders = numberofBidOrders - 1; }
+    else { numberofAskOrders = numberofAskOrders - 1; }
     if(priceLadder[cursor] == 0) {
         removeFromBitmap(cursor);
         if((side == Side::BUY) && (bestBidCursor == cursor)) { bestBidCursor = cursorSeekDown(cursor); }
