@@ -7,7 +7,6 @@
 #include "headers/stock-map.hpp"
 
 void displayResults(StockMap& stockMap) noexcept {
-    std::cout << "CPP Market Maker" << std::endl;
     for(auto& stockSymbol: stockMap.getPerSymbolData()) {
         std::cout << "----------------------------" << std::endl;
         std::cout << "STOCK: " << stockSymbol.symbol << std::endl;
