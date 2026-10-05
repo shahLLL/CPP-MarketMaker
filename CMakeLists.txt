@@ -22,6 +22,9 @@ FetchContent_MakeAvailable(Catch2)
 # Main
 file(GLOB MAIN "main.cpp")
 
+# Bench
+file(GLOB BENCH "bench.cpp")
+
 # Sources
 file(GLOB SOURCES "src/*.cpp")
 
@@ -31,13 +34,18 @@ file(GLOB TESTS "tests/*.cpp")
 # Create Executables
 add_executable(mm ${MAIN} ${SOURCES})
 add_executable(mm-debug ${MAIN} ${SOURCES})
+add_executable(bench ${BENCH} ${SOURCES})
+add_executable(bench-debug ${BENCH} ${SOURCES})
 add_executable(unit_tests ${SOURCES} ${TESTS})
 
 # Compile and Link Options
 if(NOT MSVC)
     target_compile_options(mm PRIVATE -O3 -march=native)
     target_compile_options(mm-debug PRIVATE -fsanitize=thread -g -O1)
+    target_compile_options(bench PRIVATE -O3 -march=native)
+    target_compile_options(bench-debug PRIVATE -fsanitize=thread -g -O1)
     target_link_options(mm-debug PRIVATE -fsanitize=thread)
+    target_link_options(bench-debug PRIVATE -fsanitize=thread)
 endif()
 
 # Link against the Catch2 v3 main entry point target
