@@ -46,7 +46,7 @@ class OrderBook final {
         const UInt64 getQuantity(const UInt32 price);
         const Int32 getBestBid() const noexcept;
         const Int32 getBestAsk() const noexcept;
-        const Int32 getMidPrice() const noexcept;
+        const Double getMidPrice() const noexcept;
         const UInt16 getNumberOfBidOrders() const noexcept;
         const UInt16 getNumberOfAskOrders() const noexcept;
 

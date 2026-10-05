@@ -17,7 +17,7 @@ struct SymbolData final {
     const Int32 bestAsk;
     const UInt16 numberOfBidOrders;
     const UInt16 numberOfAskOrders;
-    const Int32 midPrice;
+    const Double midPrice;
     const UInt16 stockLocate;
 };
 

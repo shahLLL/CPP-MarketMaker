@@ -150,15 +150,15 @@ TEST_CASE("ORDERBOOK TESTCASE #7", "[getMidPrice]") {
     const UInt32 price1 = 50'500;
     const UInt32 price2 = 50'100;
 
-    REQUIRE(orderBook.getMidPrice() == NULL_CURSOR);
+    REQUIRE(orderBook.getMidPrice() == static_cast<Double>(NULL_CURSOR));
     REQUIRE(orderBook.addOrder(1, Side::SELL, 4, price1));
-    REQUIRE(orderBook.getMidPrice() == price1);
+    REQUIRE(orderBook.getMidPrice() == static_cast<Double>(price1));
     REQUIRE(orderBook.deleteOrder(1));
-    REQUIRE(orderBook.getMidPrice() == NULL_CURSOR);
+    REQUIRE(orderBook.getMidPrice() == static_cast<Double>(NULL_CURSOR));
     REQUIRE(orderBook.addOrder(2, Side::BUY, 4, price2));
-    REQUIRE(orderBook.getMidPrice() == price2);
+    REQUIRE(orderBook.getMidPrice() == static_cast<Double>(price2));
     REQUIRE(orderBook.addOrder(3, Side::SELL, 4, price1));
-    REQUIRE(orderBook.getMidPrice() == (price1 + price2)/2);
+    REQUIRE(orderBook.getMidPrice() == (static_cast<Double>(price1) + static_cast<Double>(price2))/2.0);
 }
 
 TEST_CASE("ORDERBOOK TESTCASE #8", "[getNumberOfBidOrders]") {

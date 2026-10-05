@@ -58,11 +58,11 @@ const Int32 OrderBook::getBestAsk() const noexcept {
     return (bestAskCursor + TICK_MIN); 
 }
         
-const Int32 OrderBook::getMidPrice() const noexcept {
-    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return NULL_CURSOR;
-    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return bestAskCursor + TICK_MIN;
-    if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return bestBidCursor + TICK_MIN;
-    return ((bestBidCursor + TICK_MIN) + (bestAskCursor + TICK_MIN)) / 2;
+const Double OrderBook::getMidPrice() const noexcept {
+    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return static_cast<Double>(NULL_CURSOR);
+    if((bestBidCursor == NULL_CURSOR) && (bestAskCursor != NULL_CURSOR)) return static_cast<Double>(bestAskCursor + TICK_MIN);
+    if((bestBidCursor != NULL_CURSOR) && (bestAskCursor == NULL_CURSOR)) return static_cast<Double>(bestBidCursor + TICK_MIN);
+    return (static_cast<Double>(bestBidCursor + TICK_MIN) + static_cast<Double>(bestAskCursor + TICK_MIN)) / 2.0;
 }
 
 const UInt16 OrderBook::getNumberOfBidOrders() const noexcept { return numberofBidOrders; }
