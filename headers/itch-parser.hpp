@@ -28,7 +28,7 @@ class ITCHParser final {
 
         // Methods
         [[nodiscard]] const Bool hasNext() const noexcept;
-        void parseNext(ByteContainer& byteContainer) const;
+        void parseNext(ByteContainer& byteContainer, Bool* isOrderBookMessage = nullptr) const;
         void increment();
 
         // Non-copyable

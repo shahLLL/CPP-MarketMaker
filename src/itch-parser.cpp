@@ -31,32 +31,120 @@ ITCHParser::ITCHParser(FilePath filePath) {
 
 [[nodiscard]] const Bool ITCHParser::hasNext() const noexcept { return currentPtr < endPtr; }
 
-void ITCHParser::parseNext(ByteContainer& byteContainer) const {
+void ITCHParser::parseNext(ByteContainer& byteContainer, Bool* isOrderBookMessage) const {
     if(currentPtr >= endPtr) { throw std::runtime_error("PARSENEXT NOT POSSIBLE, FILE EMPTY"); }
     Alpha messageType = static_cast<Alpha>(*currentPtr);
     switch(messageType) {
-        case 'S': ITCHParserUtil::parseSystemEventMessage(byteContainer, currentPtr); break;
-        case 'R': ITCHParserUtil::parseStockDirectory(byteContainer, currentPtr); break;
-        case 'H': ITCHParserUtil::parseStockTradingAction(byteContainer, currentPtr); break;
-        case 'Y': ITCHParserUtil::parseRegSHORestriction(byteContainer, currentPtr); break;
-        case 'L': ITCHParserUtil::parseMarketParticipantPosition(byteContainer, currentPtr); break;
-        case 'V': ITCHParserUtil::parseMWCBDeclineLevelMessage(byteContainer, currentPtr); break;
-        case 'W': ITCHParserUtil::parseMWCBStatusMessage(byteContainer, currentPtr); break;
-        case 'K': ITCHParserUtil::parseQuotingPeriodUpdate(byteContainer, currentPtr); break;
-        case 'J': ITCHParserUtil::parseLULDAuctionCollar(byteContainer, currentPtr); break;
-        case 'h': ITCHParserUtil::parseOperationalHalt(byteContainer, currentPtr); break;
-        case 'A': ITCHParserUtil::parseAddOrderMessage(byteContainer, currentPtr); break;
-        case 'F': ITCHParserUtil::parseAddOrderMPIDAttributionMessage(byteContainer, currentPtr); break;
-        case 'E': ITCHParserUtil::parseOrderExecutedMessage(byteContainer, currentPtr); break;
-        case 'C': ITCHParserUtil::parseOrderExecutedWithPriceMessage(byteContainer, currentPtr); break;
-        case 'X': ITCHParserUtil::parseOrderCancelMessage(byteContainer, currentPtr); break;
-        case 'D': ITCHParserUtil::parseOrderDeleteMessage(byteContainer, currentPtr); break;
-        case 'U': ITCHParserUtil::parseOrderReplaceMessage(byteContainer, currentPtr); break;
-        case 'P': ITCHParserUtil::parseTradeMessage(byteContainer, currentPtr); break;
-        case 'Q': ITCHParserUtil::parseCrossTradeMessage(byteContainer, currentPtr); break;
-        case 'B': ITCHParserUtil::parseBrokenTradeMessage(byteContainer, currentPtr); break;
-        case 'I': ITCHParserUtil::parseNOIIMessage(byteContainer, currentPtr); break;
-        case 'O': ITCHParserUtil::parseDLWCRPD(byteContainer, currentPtr); break;
+        case 'S': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseSystemEventMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'R': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseStockDirectory(byteContainer, currentPtr); 
+            break;
+        }
+        case 'H': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseStockTradingAction(byteContainer, currentPtr);
+            break;
+        }
+        case 'Y': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseRegSHORestriction(byteContainer, currentPtr);
+            break;
+        }
+        case 'L': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseMarketParticipantPosition(byteContainer, currentPtr);
+            break;
+        }
+        case 'V': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseMWCBDeclineLevelMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'W': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseMWCBStatusMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'K': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseQuotingPeriodUpdate(byteContainer, currentPtr);
+            break;
+        }
+        case 'J': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseLULDAuctionCollar(byteContainer, currentPtr);
+            break;
+        }
+        case 'h': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseOperationalHalt(byteContainer, currentPtr);
+            break;
+        }
+        case 'A': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseAddOrderMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'F': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseAddOrderMPIDAttributionMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'E': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseOrderExecutedMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'C': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseOrderExecutedWithPriceMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'X': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseOrderCancelMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'D': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseOrderDeleteMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'U': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = true; }
+            ITCHParserUtil::parseOrderReplaceMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'P': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseTradeMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'Q': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseCrossTradeMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'B': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseBrokenTradeMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'I': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseNOIIMessage(byteContainer, currentPtr);
+            break;
+        }
+        case 'O': {
+            if(isOrderBookMessage != nullptr) { *isOrderBookMessage = false; }
+            ITCHParserUtil::parseDLWCRPD(byteContainer, currentPtr);
+            break;
+        }
         default: throw std::runtime_error("PARSENEXT NOT POSSIBLE, UNKNOWN MESSAGE TYPE");
     }
 }
