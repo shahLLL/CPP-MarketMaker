@@ -21,7 +21,7 @@ inline constexpr SizeT EXPECTED_NUMBER_OF_ENTRIES = 12012;
 
 void displayResults(const LatencyVector& latencies, const SizeT numberOfEntries, const Double elapsedTime, const Double throughput) noexcept {
     std::cout << "============================================" << std::endl;
-    std::cout << "  Itch Parser Benchmark  (" << numberOfEntries << " ops)" << std::endl;
+    std::cout << "  Itch Market Replay Benchmark  (" << numberOfEntries << " ops)" << std::endl;
     std::cout << "============================================" << std::endl;
     std::cout << "  Elapsed:     " << elapsedTime * TEN_EXP_THREE << " ms" << std::endl;
     std::cout << "  Throughput:  " << throughput / TEN_EXP_SIX   << " M ops/sec" << std::endl;
