@@ -47,7 +47,7 @@ void parseFile(ITCHParser& itchParser, StockMap& stockMap) {
 
 int main(int argc, char* argv[]) {
     if(argc != 2) {
-        std::cout << "Usage: mm <inputfile>" << std::endl;
+        std::cout << "Usage: itchreplay <inputfile>" << std::endl;
         return 1;
     }
     

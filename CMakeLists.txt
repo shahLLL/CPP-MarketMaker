@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(cpp-marketmaker LANGUAGES CXX)
+project(ITCHMarketReplay LANGUAGES CXX)
 
 # Require C++23
 set(CMAKE_CXX_STANDARD 23)
@@ -32,19 +32,19 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB TESTS "tests/*.cpp")
 
 # Create Executables
-add_executable(mm ${MAIN} ${SOURCES})
-add_executable(mm-debug ${MAIN} ${SOURCES})
+add_executable(itchreplay ${MAIN} ${SOURCES})
+add_executable(debug ${MAIN} ${SOURCES})
 add_executable(bench ${BENCH} ${SOURCES})
 add_executable(bench-debug ${BENCH} ${SOURCES})
 add_executable(unit_tests ${SOURCES} ${TESTS})
 
 # Compile and Link Options
 if(NOT MSVC)
-    target_compile_options(mm PRIVATE -O3 -march=native)
-    target_compile_options(mm-debug PRIVATE -fsanitize=thread -g -O1)
+    target_compile_options(itchreplay PRIVATE -O3 -march=native)
+    target_compile_options(debug PRIVATE -fsanitize=thread -g -O1)
     target_compile_options(bench PRIVATE -O3 -march=native)
     target_compile_options(bench-debug PRIVATE -fsanitize=thread -g -O1)
-    target_link_options(mm-debug PRIVATE -fsanitize=thread)
+    target_link_options(debug PRIVATE -fsanitize=thread)
     target_link_options(bench-debug PRIVATE -fsanitize=thread)
 endif()
 
