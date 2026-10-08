@@ -23,7 +23,7 @@ void displayResults(StockMap& stockMap) noexcept {
 }
 
 void parseFile(ITCHParser& itchParser, StockMap& stockMap) {
-    SPSCQueue<10> spscQueue = SPSCQueue<10>(); 
+    SPSCQueue<1> spscQueue = SPSCQueue<1>(); 
     std::atomic<bool> done{false};
 
     std::thread producerThread([&] {
